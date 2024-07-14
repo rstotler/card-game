@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.jbs.cardgame.component.Mouse;
+import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.Screen;
 
@@ -23,6 +23,7 @@ public class BattleScreen extends Screen {
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         gameBoard = new GameBoard();
+        centerCamera();
 
         initInputAdapter();
     }
@@ -91,6 +92,13 @@ public class BattleScreen extends Screen {
         font.draw(spriteBatch, "FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()), 1205, 767);
         
         spriteBatch.end();
+    }
+
+    public void centerCamera() {
+        int xLoc = ((gameBoard.cardsWidth * Card.WIDTH) / 2);
+        int yLoc = ((gameBoard.cardsHeight * Card.HEIGHT) / 2);
+        camera.position.set(xLoc, yLoc, 0);
+        camera.update();
     }
 
     public void dispose() {
