@@ -23,11 +23,12 @@ public class Screen {
         font = new BitmapFont(Gdx.files.internal("fonts/Code_New_Roman_18.fnt"), Gdx.files.internal("fonts/Code_New_Roman_18.png"), false);
     }
 
+    public void moveCamera() {
+        
+    }
+
     public void handleInput() {}
-    
     public void update() {}
-
     public void render() {}
-
     public void dispose() {}
 }

@@ -7,16 +7,21 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.Screen;
 
 public class BattleScreen extends Screen {
     OrthographicCamera cameraDebug;
+
+    GameBoard gameBoard;
 
     public BattleScreen() {
         super();
 
         cameraDebug = new OrthographicCamera();
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        gameBoard = new GameBoard();
 
         initInputAdapter();
     }
@@ -51,6 +56,12 @@ public class BattleScreen extends Screen {
             public boolean keyUp(int keyCode) {
                 return true;
             }
+
+            @Override
+            public boolean touchDragged (int moveX, int moveY, int pointer) {
+                moveCamera();
+                return true;
+            }
         });
     }
 
@@ -61,7 +72,9 @@ public class BattleScreen extends Screen {
     }
 
     public void render() {
-        ScreenUtils.clear(0/255f, 0/255f, 7/255f, 1);
+        ScreenUtils.clear(0/255f, 0/255f, 15/255f, 1);
+
+        gameBoard.render(camera, shapeRenderer);
 
         renderDebugData();
     }
@@ -77,5 +90,7 @@ public class BattleScreen extends Screen {
     }
 
     public void dispose() {
+        spriteBatch.dispose();
+        shapeRenderer.dispose();
     }
 }
