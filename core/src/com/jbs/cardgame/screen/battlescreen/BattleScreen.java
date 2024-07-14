@@ -7,13 +7,14 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.jbs.cardgame.component.Mouse;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.Screen;
 
 public class BattleScreen extends Screen {
-    OrthographicCamera cameraDebug;
+    public OrthographicCamera cameraDebug;
 
-    GameBoard gameBoard;
+    public GameBoard gameBoard;
 
     public BattleScreen() {
         super();
@@ -59,7 +60,9 @@ public class BattleScreen extends Screen {
 
             @Override
             public boolean touchDragged (int moveX, int moveY, int pointer) {
-                moveCamera();
+                int moveDiffX = (mouse.oldX - moveX) / 2;
+                int moveDiffY = (moveY - mouse.oldY) / 2;
+                moveCamera(moveDiffX, moveDiffY);
                 return true;
             }
         });
@@ -69,6 +72,7 @@ public class BattleScreen extends Screen {
     }
 
     public void update() {
+        mouse.update();
     }
 
     public void render() {
