@@ -13,7 +13,7 @@ import com.jbs.cardgame.screen.Screen;
 
 public class BattleScreen extends Screen {
     public OrthographicCamera cameraDebug;
-
+    
     public GameBoard gameBoard;
 
     public BattleScreen() {
@@ -60,7 +60,13 @@ public class BattleScreen extends Screen {
             }
 
             @Override
-            public boolean touchDragged (int moveX, int moveY, int pointer) {
+            public boolean scrolled(float amountX, float amountY) {
+                changeZoomLevel((int) amountY);
+                return true;
+            }
+
+            @Override
+            public boolean touchDragged(int moveX, int moveY, int pointer) {
                 int moveDiffX = (mouse.oldX - moveX) / 2;
                 int moveDiffY = (moveY - mouse.oldY) / 2;
                 moveCamera(moveDiffX, moveDiffY);
@@ -98,6 +104,18 @@ public class BattleScreen extends Screen {
         int xLoc = ((gameBoard.cardsWidth * Card.WIDTH) / 2);
         int yLoc = ((gameBoard.cardsHeight * Card.HEIGHT) / 2);
         camera.position.set(xLoc, yLoc, 0);
+        camera.update();
+    }
+
+    public void changeZoomLevel(int zoomDirection) {
+        if(zoomDirection < 0
+        && camera.zoom > .5) {
+            camera.zoom -= .5f;
+        }
+        else if(zoomDirection > 0
+        && camera.zoom < 1.5) {
+            camera.zoom += .5f;
+        }
         camera.update();
     }
 

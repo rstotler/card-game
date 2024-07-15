@@ -28,7 +28,7 @@ public class Screen {
     }
 
     public void moveCamera(int moveX, int moveY) {
-        camera.position.add(moveX, moveY, 0);
+        camera.position.add(moveX * camera.zoom, moveY * camera.zoom, 0);
         camera.update();
     }
 
