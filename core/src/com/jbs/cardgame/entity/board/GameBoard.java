@@ -44,4 +44,12 @@ public class GameBoard {
 
         shapeRenderer.end();
     }
+
+    public int getWidth() {
+        return (Card.WIDTH * boardSlot.length);
+    }
+
+    public int getHeight() {
+        return (Card.HEIGHT * boardSlot[0].length);
+    }
 }

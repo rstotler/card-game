@@ -1,5 +1,7 @@
 package com.jbs.cardgame.screen.battlescreen;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
@@ -8,23 +10,36 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.jbs.cardgame.entity.Card;
+import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.Screen;
+import com.jbs.cardgame.screen.battlescreen.gamephase.Deal;
+import com.jbs.cardgame.screen.battlescreen.gamephase.GamePhase;
 
 public class BattleScreen extends Screen {
+    public OrthographicCamera cameraTop;
     public OrthographicCamera cameraDebug;
     
+    public GamePhase gamePhase;
     public GameBoard gameBoard;
+
+    public ArrayList<BattlePlayer> battlePlayerList;
 
     public BattleScreen() {
         super();
 
+        cameraTop = new OrthographicCamera();
+        cameraTop.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cameraDebug = new OrthographicCamera();
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        gamePhase = new Deal();
         gameBoard = new GameBoard();
-        centerCamera();
 
+        battlePlayerList = new ArrayList<>();
+        battlePlayerList.add(new BattlePlayer(true));
+
+        centerCamera();
         initInputAdapter();
     }
 
@@ -80,12 +95,14 @@ public class BattleScreen extends Screen {
 
     public void update() {
         mouse.update();
+        gamePhase.update();
     }
 
     public void render() {
         ScreenUtils.clear(0/255f, 0/255f, 15/255f, 1);
 
         gameBoard.render(camera, shapeRenderer);
+        gamePhase.render(camera, shapeRenderer, gameBoard);
 
         renderDebugData();
     }
