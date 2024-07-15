@@ -29,7 +29,7 @@ public class BattleScreen extends Screen {
         super();
 
         cameraTop = new OrthographicCamera();
-        cameraTop.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cameraTop.setToOrtho(false, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
         cameraDebug = new OrthographicCamera();
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -82,8 +82,8 @@ public class BattleScreen extends Screen {
 
             @Override
             public boolean touchDragged(int moveX, int moveY, int pointer) {
-                int moveDiffX = (mouse.oldX - moveX) / 2;
-                int moveDiffY = (moveY - mouse.oldY) / 2;
+                int moveDiffX = (mouse.oldLocation.x - moveX) / 2;
+                int moveDiffY = (moveY - mouse.oldLocation.y) / 2;
                 moveCamera(moveDiffX, moveDiffY);
                 return true;
             }
@@ -102,7 +102,7 @@ public class BattleScreen extends Screen {
         ScreenUtils.clear(0/255f, 0/255f, 15/255f, 1);
 
         gameBoard.render(camera, shapeRenderer);
-        gamePhase.render(camera, shapeRenderer, gameBoard);
+        gamePhase.render(camera, cameraTop, shapeRenderer, gameBoard);
 
         renderDebugData();
     }

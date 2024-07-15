@@ -1,21 +1,18 @@
 package com.jbs.cardgame.screen;
 
 public class Rect {
-    public int x;
-    public int y;
+    public Point location;
     public int width;
     public int height;
 
     public Rect(int width, int height) {
-        x = 0;
-        y = 0;
+        location = new Point(0, 0);
         this.width = width;
         this.height = height;
     }
 
-    public Rect(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
+    public Rect(Point location, int width, int height) {
+        this.location = location;
         this.width = width;
         this.height = height;
     }

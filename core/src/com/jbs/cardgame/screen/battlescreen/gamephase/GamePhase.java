@@ -6,5 +6,5 @@ import com.jbs.cardgame.entity.board.GameBoard;
 
 public class GamePhase {
     public void update() {}
-    public void render(OrthographicCamera camera, ShapeRenderer shapeRenderer, GameBoard gameBoard) {}
+    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ShapeRenderer shapeRenderer, GameBoard gameBoard) {}
 }

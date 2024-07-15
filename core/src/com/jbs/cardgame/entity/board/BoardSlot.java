@@ -2,16 +2,16 @@ package com.jbs.cardgame.entity.board;
 
 import java.util.Random;
 
+import com.jbs.cardgame.screen.Point;
+
 public class BoardSlot {
-    public int x;
-    public int y;
-    
+    public Point location;
+
     public int color;
 
-    public BoardSlot(int x, int y) {
-        this.x = x;
-        this.y = y;
-
+    public BoardSlot(Point location) {
+        this.location = location;
+        
         color = new Random().nextInt(50) + 10;
     }
 }

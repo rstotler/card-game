@@ -1,13 +1,12 @@
 package com.jbs.cardgame.component;
 
 import com.badlogic.gdx.Gdx;
+import com.jbs.cardgame.screen.Point;
 
 public class Mouse {
-    public int oldX;
-    public int oldY;
+    public Point oldLocation;
 
     public void update() {
-        oldX = Gdx.input.getX();
-        oldY = Gdx.input.getY();
+        oldLocation = new Point(Gdx.input.getX(), Gdx.input.getY());
     }
 }
