@@ -16,4 +16,11 @@ public class Rect {
         this.width = width;
         this.height = height;
     }
+
+    public boolean rectCollide(Rect rect) {
+        return location.x + width >= rect.location.x
+            && location.x <= rect.location.x + rect.width
+            && location.y + height >= rect.location.y
+            && location.y <= rect.location.y + rect.height;
+    }
 }

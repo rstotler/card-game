@@ -24,12 +24,13 @@ public class BattleScreen extends Screen {
     public GameBoard gameBoard;
 
     public ArrayList<BattlePlayer> battlePlayerList;
+    public BattlePlayer currentBattlePlayer;
 
     public BattleScreen() {
         super();
 
         cameraTop = new OrthographicCamera();
-        cameraTop.setToOrtho(false, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+        cameraTop.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cameraDebug = new OrthographicCamera();
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -38,6 +39,7 @@ public class BattleScreen extends Screen {
 
         battlePlayerList = new ArrayList<>();
         battlePlayerList.add(new BattlePlayer(true));
+        currentBattlePlayer = battlePlayerList.get(0);
 
         centerCamera();
         initInputAdapter();
@@ -46,6 +48,7 @@ public class BattleScreen extends Screen {
     public void initInputAdapter() {
         Gdx.input.setInputProcessor(new InputAdapter() {
 
+            // Keyboard Input //
             @Override
             public boolean keyDown(int keyCode) {
                 String key = Input.Keys.toString(keyCode);
@@ -74,6 +77,7 @@ public class BattleScreen extends Screen {
                 return true;
             }
 
+            // Mouse Input //
             @Override
             public boolean scrolled(float amountX, float amountY) {
                 changeZoomLevel((int) amountY);
@@ -82,8 +86,9 @@ public class BattleScreen extends Screen {
 
             @Override
             public boolean touchDragged(int moveX, int moveY, int pointer) {
-                int moveDiffX = (mouse.oldLocation.x - moveX) / 2;
-                int moveDiffY = (moveY - mouse.oldLocation.y) / 2;
+                moveY = Gdx.graphics.getHeight() - moveY;
+                int moveDiffX = (mouse.rect.location.x - moveX) / 2;
+                int moveDiffY = (mouse.rect.location.y - moveY) / 2;
                 moveCamera(moveDiffX, moveDiffY);
                 return true;
             }
@@ -95,14 +100,14 @@ public class BattleScreen extends Screen {
 
     public void update() {
         mouse.update();
-        gamePhase.update();
+        gamePhase.update(currentBattlePlayer);
     }
 
     public void render() {
         ScreenUtils.clear(0/255f, 0/255f, 15/255f, 1);
 
         gameBoard.render(camera, shapeRenderer);
-        gamePhase.render(camera, cameraTop, shapeRenderer, gameBoard);
+        gamePhase.render(camera, cameraTop, shapeRenderer, mouse, gameBoard, battlePlayerList);
 
         renderDebugData();
     }
