@@ -32,6 +32,18 @@ public class Screen {
         camera.update();
     }
 
+    public void changeZoomLevel(int zoomDirection) {
+        if(zoomDirection < 0
+        && camera.zoom > 1.0) {
+            camera.zoom -= .5f;
+        }
+        else if(zoomDirection > 0
+        && camera.zoom < 1.5) {
+            camera.zoom += .5f;
+        }
+        camera.update();
+    }
+
     public void handleInput() {}
     public void update() {}
     public void render() {}

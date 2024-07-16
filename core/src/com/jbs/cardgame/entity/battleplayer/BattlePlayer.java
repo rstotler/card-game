@@ -7,7 +7,8 @@ import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.Point;
 
 public class BattlePlayer {
-    public static int HAND_OVERLAP_WIDTH = 50;
+    public static final int HAND_OVERLAP_WIDTH = 50;
+    public static final int HAND_Y_OFFSET = -90;
 
     public boolean isPlayer;
 
@@ -30,7 +31,7 @@ public class BattlePlayer {
         return debugDeck;
     }
 
-    public void drawCard() {
+    public void drawCardToHand() {
         if(deck.size() > 0) {
             hand.add(deck.get(0));
             deck.remove(0);
@@ -45,7 +46,7 @@ public class BattlePlayer {
 
             Card targetCard = hand.get(i);
             targetCard.handLocation.x = (Gdx.graphics.getWidth() / 2) - (handWidth / 2) + (HAND_OVERLAP_WIDTH * i);
-            targetCard.handLocation.y = -90;
+            targetCard.handLocation.y = HAND_Y_OFFSET;
         }
     }
 

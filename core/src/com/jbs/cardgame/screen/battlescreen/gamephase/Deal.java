@@ -14,6 +14,7 @@ import com.jbs.cardgame.screen.Point;
 
 public class Deal extends GamePhase {
     public final int DEAL_AMOUNT = 7;
+    public final boolean FAST_DEAL = true;
 
     public float dealPercent;
     public float dealCount;
@@ -38,12 +39,16 @@ public class Deal extends GamePhase {
 
         // Deal //
         else if(dealCount < DEAL_AMOUNT) {
-            dealPercent += .065;
+            if(FAST_DEAL) {
+                dealPercent = 1;
+            } else {
+                dealPercent += .065;
+            }
             if(dealPercent >= 1) {
                 dealPercent = 0;
                 dealCount += 1;
 
-                currentBattlePlayer.drawCard();
+                currentBattlePlayer.drawCardToHand();
             }
         }
 

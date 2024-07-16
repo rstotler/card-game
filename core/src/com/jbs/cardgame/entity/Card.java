@@ -9,11 +9,13 @@ public class Card {
     public static final int HEIGHT = 120;
 
     public Point handLocation;
+    public Point selectedCardOffset;
 
     public int color;
 
     public Card() {
-        this.handLocation = new Point(0, 0);
+        handLocation = new Point(0, 0);
+        selectedCardOffset = new Point(0, 0);
 
         color = new Random().nextInt(35) + 15;
     }
