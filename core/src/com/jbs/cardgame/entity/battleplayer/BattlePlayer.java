@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.jbs.cardgame.entity.Card;
+import com.jbs.cardgame.screen.Point;
 
 public class BattlePlayer {
     public static int HAND_OVERLAP_WIDTH = 50;
@@ -46,5 +47,30 @@ public class BattlePlayer {
             targetCard.handLocation.x = (Gdx.graphics.getWidth() / 2) - (handWidth / 2) + (HAND_OVERLAP_WIDTH * i);
             targetCard.handLocation.y = -90;
         }
+    }
+
+    public static Point getPlayerScreenLocation(int battlePlayerIndex, int battlePlayerListSize) {
+        int locationX = 0;
+        int locationY = 0;
+
+        if(battlePlayerIndex == 0) {
+            locationX = (Gdx.graphics.getWidth() / 2) - Card.WIDTH;
+            locationY = -(Card.HEIGHT * 2);
+        } else {
+            if(battlePlayerListSize == 2) {
+                locationX = (Gdx.graphics.getWidth() / 2) - Card.WIDTH;
+                locationY = Gdx.graphics.getHeight();
+            } else {
+                if((battlePlayerIndex - 1) % 2 == 0) {
+                    locationX = Gdx.graphics.getWidth();
+                    locationY = (Gdx.graphics.getHeight() / 2) - Card.HEIGHT;
+                } else {
+                    locationX = -(Card.WIDTH * 2);
+                    locationY = (Gdx.graphics.getHeight() / 2) - Card.HEIGHT;
+                }
+            }
+        }
+        
+        return new Point(locationX, locationY);
     }
 }

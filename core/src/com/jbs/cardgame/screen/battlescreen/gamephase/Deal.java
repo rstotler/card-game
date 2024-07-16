@@ -11,7 +11,6 @@ import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.Point;
-import com.jbs.cardgame.screen.Rect;
 
 public class Deal extends GamePhase {
     public final int DEAL_AMOUNT = 7;
@@ -24,8 +23,21 @@ public class Deal extends GamePhase {
         dealCount = 0;
     }
 
-    public void update(BattlePlayer currentBattlePlayer) {
-        if(dealCount < DEAL_AMOUNT) {
+    public String update(ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentBattlePlayer) {
+
+        // Switch Player Or End GamePhase //
+        if(dealCount >= DEAL_AMOUNT) {
+            if(battlePlayerList.contains(currentBattlePlayer)
+            && battlePlayerList.indexOf(currentBattlePlayer) < battlePlayerList.size() - 1) {
+                dealCount = 0;
+                return "Next Player";
+            } else {
+                return "End GamePhase";
+            }
+        }
+
+        // Deal //
+        else if(dealCount < DEAL_AMOUNT) {
             dealPercent += .065;
             if(dealPercent >= 1) {
                 dealPercent = 0;
@@ -34,52 +46,31 @@ public class Deal extends GamePhase {
                 currentBattlePlayer.drawCard();
             }
         }
+
+        return "";
     }
 
-    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ShapeRenderer shapeRenderer, Mouse mouse, GameBoard gameBoard, ArrayList<BattlePlayer> battlePlayerList) {
+    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ShapeRenderer shapeRenderer, Mouse mouse, GameBoard gameBoard, ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentBattlePlayer) {
         shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setProjectionMatrix(cameraTop.combined);
 
         // Deck //
-        shapeRenderer.setColor(40/255f, 0/255f, 0/255f, 1f);
         int deckX = (Gdx.graphics.getWidth() / 2) - Card.WIDTH;
         int deckY = (Gdx.graphics.getHeight() / 2) - Card.HEIGHT;
         Point deckLocation = new Point(deckX, deckY);
-        shapeRenderer.rect(deckX, deckY, Card.WIDTH * 2, Card.HEIGHT * 2);
-
-        // Card Being Dealt //
-        shapeRenderer.setColor(55/255f, 0/255f, 0/255f, 1f);
-        int dealDestinationX = deckX;
-        int dealDestinationY = 0;
-        Point dealDestination = new Point(dealDestinationX, dealDestinationY);
-        Point dealingCardLocation = Point.getPointAlongLine(deckLocation, dealDestination, dealPercent);
-        shapeRenderer.rect(dealingCardLocation.x, dealingCardLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
-        
-        // Player Hand //
-        Card handHoverCard = null;
-        for(int i = battlePlayerList.get(0).hand.size() - 1; i >= 0 ; i--) {
-            Card handCard = battlePlayerList.get(0).hand.get(i);
-
-            Rect handRect = null;
-            if(i == 0) {
-                handRect = new Rect(handCard.handLocation, Card.WIDTH * 2, Card.HEIGHT * 2);
-            } else {
-                handRect = new Rect(new Point(handCard.handLocation.x + ((Card.WIDTH * 2) - BattlePlayer.HAND_OVERLAP_WIDTH), handCard.handLocation.y), BattlePlayer.HAND_OVERLAP_WIDTH, Card.HEIGHT * 2);
-            }
-            
-            if(handHoverCard == null
-            && mouse.rect.rectCollide(handRect)) {
-                handHoverCard = handCard;
-            } else {
-                shapeRenderer.setColor(handCard.color/255f, 0/255f, 0/255f, 1f);
-                shapeRenderer.rect(handCard.handLocation.x, handCard.handLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
-            }
+        int currentBattlePlayerIndex = battlePlayerList.indexOf(currentBattlePlayer);
+        if(!(currentBattlePlayerIndex == battlePlayerList.size() - 1
+        && dealCount >= DEAL_AMOUNT - 1)) {
+            shapeRenderer.setColor(40/255f, 0/255f, 0/255f, 1f);
+            shapeRenderer.rect(deckX, deckY, Card.WIDTH * 2, Card.HEIGHT * 2);
         }
-
-        // Hand Hovered Over Card //
-        if(handHoverCard != null) {
-            shapeRenderer.setColor(65/255f, 0/255f, 0/255f, 1f);
-            shapeRenderer.rect(handHoverCard.handLocation.x, 0, Card.WIDTH * 2, Card.HEIGHT * 2);
+        
+        // Card Being Dealt //
+        if(dealCount < DEAL_AMOUNT) {
+            shapeRenderer.setColor(55/255f, 0/255f, 0/255f, 1f);
+            Point dealDestination = BattlePlayer.getPlayerScreenLocation(currentBattlePlayerIndex, battlePlayerList.size());
+            Point dealingCardLocation = Point.getPointAlongLine(deckLocation, dealDestination, dealPercent);
+            shapeRenderer.rect(dealingCardLocation.x, dealingCardLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
         }
         
         shapeRenderer.end();
