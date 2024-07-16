@@ -10,10 +10,10 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
-import com.jbs.cardgame.screen.Point;
 import com.jbs.cardgame.screen.Rect;
 import com.jbs.cardgame.screen.Screen;
 import com.jbs.cardgame.screen.battlescreen.gamephase.Deal;
@@ -68,6 +68,11 @@ public class BattleScreen extends Screen {
                     } else {
                         Gdx.graphics.setFullscreenMode(currentMode);
                     }
+
+                    Settings.SIZE_RATIO_X = 1280.0f / Gdx.graphics.getWidth();
+                    Settings.SIZE_RATIO_Y = 768.0f / Gdx.graphics.getHeight();
+
+                    battlePlayerList.get(0).updateHandLocations();
                 }
 
                 else if(key.equals("Escape")) {
@@ -165,16 +170,10 @@ public class BattleScreen extends Screen {
 
         mouse.hoverHandCard = null;
         if(mouse.selectedHandCard == null) {
-            for(int i = player.hand.size() - 1; i >= 0; i--) {
+            for(int i = 0; i < player.hand.size(); i++) {
                 Card handCard = battlePlayerList.get(0).hand.get(i);
     
-                Rect handCardRect = null;
-                if(i == 0) {
-                    handCardRect = new Rect(handCard.handLocation, Card.WIDTH * 2, Card.HEIGHT * 2);
-                } else {
-                    handCardRect = new Rect(new Point(handCard.handLocation.x + ((Card.WIDTH * 2) - BattlePlayer.HAND_OVERLAP_WIDTH), handCard.handLocation.y), BattlePlayer.HAND_OVERLAP_WIDTH, Card.HEIGHT * 2);
-                }
-    
+                Rect handCardRect = new Rect(handCard.handLocation, Card.WIDTH * 2, Card.HEIGHT * 2);
                 if(mouse.rect.rectCollide(handCardRect)) {
                     mouse.hoverHandCard = handCard;
                     break;
@@ -234,6 +233,8 @@ public class BattleScreen extends Screen {
         font.setColor(Color.WHITE);
 
         font.draw(spriteBatch, "FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()), 1205, 767);
+        
+        font.draw(spriteBatch, "Mouse X: " + mouse.rect.location.x + ", Y: " + mouse.rect.location.y, 3, 765);
         
         spriteBatch.end();
     }

@@ -1,6 +1,7 @@
 package com.jbs.cardgame.component;
 
 import com.badlogic.gdx.Gdx;
+import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.Point;
 import com.jbs.cardgame.screen.Rect;
@@ -23,7 +24,7 @@ public class Mouse {
     }
 
     public void updateLocation() {
-        rect.location.x = Gdx.input.getX();
-        rect.location.y = Gdx.graphics.getBackBufferHeight() - Gdx.input.getY();
+        rect.location.x = (int) (Gdx.input.getX() * Settings.SIZE_RATIO_X);
+        rect.location.y = (int) ((Gdx.graphics.getBackBufferHeight() - Gdx.input.getY()) * Settings.SIZE_RATIO_Y);
     }
 }

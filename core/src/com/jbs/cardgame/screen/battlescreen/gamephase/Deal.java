@@ -2,10 +2,10 @@ package com.jbs.cardgame.screen.battlescreen.gamephase;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.component.Mouse;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
@@ -14,7 +14,7 @@ import com.jbs.cardgame.screen.Point;
 
 public class Deal extends GamePhase {
     public final int DEAL_AMOUNT = 7;
-    public final boolean FAST_DEAL = true;
+    public final boolean FAST_DEAL = false;
 
     public float dealPercent;
     public float dealCount;
@@ -42,7 +42,7 @@ public class Deal extends GamePhase {
             if(FAST_DEAL) {
                 dealPercent = 1;
             } else {
-                dealPercent += .065;
+                dealPercent += .0165;
             }
             if(dealPercent >= 1) {
                 dealPercent = 0;
@@ -60,8 +60,8 @@ public class Deal extends GamePhase {
         shapeRenderer.setProjectionMatrix(cameraTop.combined);
 
         // Deck //
-        int deckX = (Gdx.graphics.getWidth() / 2) - Card.WIDTH;
-        int deckY = (Gdx.graphics.getHeight() / 2) - Card.HEIGHT;
+        int deckX = (Settings.SCREEN_WIDTH / 2) - Card.WIDTH;
+        int deckY = (Settings.SCREEN_HEIGHT / 2) - Card.HEIGHT;
         Point deckLocation = new Point(deckX, deckY);
         int currentBattlePlayerIndex = battlePlayerList.indexOf(currentBattlePlayer);
         if(!(currentBattlePlayerIndex == battlePlayerList.size() - 1

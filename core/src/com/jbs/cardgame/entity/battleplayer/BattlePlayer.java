@@ -3,6 +3,7 @@ package com.jbs.cardgame.entity.battleplayer;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.Point;
 
@@ -45,7 +46,7 @@ public class BattlePlayer {
             int handWidth = (Card.WIDTH * 2) + (HAND_OVERLAP_WIDTH * (hand.size() - 1));
 
             Card targetCard = hand.get(i);
-            targetCard.handLocation.x = (Gdx.graphics.getWidth() / 2) - (handWidth / 2) + (HAND_OVERLAP_WIDTH * i);
+            targetCard.handLocation.x = (Settings.SCREEN_WIDTH / 2) - (handWidth / 2) + (HAND_OVERLAP_WIDTH * i);
             targetCard.handLocation.y = HAND_Y_OFFSET;
         }
     }
@@ -55,19 +56,19 @@ public class BattlePlayer {
         int locationY = 0;
 
         if(battlePlayerIndex == 0) {
-            locationX = (Gdx.graphics.getWidth() / 2) - Card.WIDTH;
+            locationX = (Settings.SCREEN_WIDTH / 2) - Card.WIDTH;
             locationY = -(Card.HEIGHT * 2);
         } else {
             if(battlePlayerListSize == 2) {
-                locationX = (Gdx.graphics.getWidth() / 2) - Card.WIDTH;
-                locationY = Gdx.graphics.getHeight();
+                locationX = (Settings.SCREEN_WIDTH / 2) - Card.WIDTH;
+                locationY = Settings.SCREEN_HEIGHT;
             } else {
                 if((battlePlayerIndex - 1) % 2 == 0) {
-                    locationX = Gdx.graphics.getWidth();
-                    locationY = (Gdx.graphics.getHeight() / 2) - Card.HEIGHT;
+                    locationX = Settings.SCREEN_WIDTH;
+                    locationY = (Settings.SCREEN_HEIGHT / 2) - Card.HEIGHT;
                 } else {
                     locationX = -(Card.WIDTH * 2);
-                    locationY = (Gdx.graphics.getHeight() / 2) - Card.HEIGHT;
+                    locationY = (Settings.SCREEN_HEIGHT / 2) - Card.HEIGHT;
                 }
             }
         }
