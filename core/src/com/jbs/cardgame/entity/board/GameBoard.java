@@ -3,6 +3,7 @@ package com.jbs.cardgame.entity.board;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.jbs.cardgame.component.Mouse;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.Point;
 
@@ -44,6 +45,10 @@ public class GameBoard {
         }
 
         shapeRenderer.end();
+    }
+
+    public boolean placeCardCheck(Mouse mouse) {
+        return false;
     }
 
     public Point getSize() {

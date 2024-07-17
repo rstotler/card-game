@@ -2,7 +2,6 @@ package com.jbs.cardgame.entity.battleplayer;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.Point;
@@ -46,8 +45,10 @@ public class BattlePlayer {
             int handWidth = (Card.WIDTH * 2) + (HAND_OVERLAP_WIDTH * (hand.size() - 1));
 
             Card targetCard = hand.get(i);
-            targetCard.handLocation.x = (Settings.SCREEN_WIDTH / 2) - (handWidth / 2) + (HAND_OVERLAP_WIDTH * i);
-            targetCard.handLocation.y = HAND_Y_OFFSET;
+            targetCard.currentLocation.x = (Settings.SCREEN_WIDTH / 2) - (handWidth / 2) + (HAND_OVERLAP_WIDTH * i);
+            targetCard.targetLocation.x = targetCard.currentLocation.x;
+            targetCard.currentLocation.y = HAND_Y_OFFSET;
+            targetCard.targetLocation.y = targetCard.currentLocation.y;
         }
     }
 

@@ -17,4 +17,8 @@ public class Point {
 
         return new Point(startPoint.x + xMod, startPoint.y + yMod);
     }
+
+    public boolean equals(Point point) {
+        return x == point.x && y == point.y;
+    }
 }

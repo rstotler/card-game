@@ -133,15 +133,29 @@ public class BattleScreen extends Screen {
             mouse.hoverHandCard = null;
 
             // Set Selected Card Offset //
-            mouse.selectedHandCard.selectedCardOffset.x = mouse.selectedHandCard.handLocation.x - mouse.rect.location.x;
-            mouse.selectedHandCard.selectedCardOffset.y = mouse.selectedHandCard.handLocation.y - mouse.rect.location.y + (BattlePlayer.HAND_Y_OFFSET * -1);
+            mouse.selectedHandCard.selectedCardOffset.x = mouse.selectedHandCard.currentLocation.x - mouse.rect.location.x;
+            mouse.selectedHandCard.selectedCardOffset.y = mouse.selectedHandCard.currentLocation.y - mouse.rect.location.y + (BattlePlayer.HAND_Y_OFFSET * -1);
         }
     }
 
     public void leftClickUp() {
         mouse.leftClick = false;
         
+        // Place Selected Card Into BoardSlot OR Return Card To Hand //
         if(mouse.selectedHandCard != null) {
+            if(!gameBoard.placeCardCheck(mouse)) {
+                float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
+                float diffY = (mouse.selectedHandCard.targetLocation.y - BattlePlayer.HAND_Y_OFFSET) - (mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y);
+                
+                if(Math.abs(diffX) < Card.MOVE_SPEED && Math.abs(diffY) < Card.MOVE_SPEED) {
+                    mouse.selectedHandCard.currentLocation.x = mouse.selectedHandCard.targetLocation.x;
+                    mouse.selectedHandCard.currentLocation.y = mouse.selectedHandCard.targetLocation.y;
+                } else {
+                    mouse.selectedHandCard.currentLocation.x = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
+                    mouse.selectedHandCard.currentLocation.y = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
+                }
+            }
+            
             mouse.selectedHandCard = null;
         }
     }
@@ -152,6 +166,8 @@ public class BattleScreen extends Screen {
     public void update() {
         mouse.updateLocation();
         updateMouse();
+
+        updateHand();
 
         // Update GamePhase //
         if(gamePhase != null) {
@@ -168,16 +184,26 @@ public class BattleScreen extends Screen {
     public void updateMouse() {
         BattlePlayer player = battlePlayerList.get(0);
 
+        // Set HoverCard //
         mouse.hoverHandCard = null;
         if(mouse.selectedHandCard == null) {
             for(int i = 0; i < player.hand.size(); i++) {
                 Card handCard = battlePlayerList.get(0).hand.get(i);
     
-                Rect handCardRect = new Rect(handCard.handLocation, Card.WIDTH * 2, Card.HEIGHT * 2);
-                if(mouse.rect.rectCollide(handCardRect)) {
+                Rect handCardRect = new Rect(handCard.currentLocation, Card.WIDTH * 2, Card.HEIGHT * 2);
+                if(mouse.rect.rectCollide(handCardRect)
+                && handCard.currentLocation.equals(handCard.targetLocation)) {
                     mouse.hoverHandCard = handCard;
                     break;
                 }
+            }
+        }
+    }
+
+    public void updateHand() {
+        for(Card handCard : battlePlayerList.get(0).hand) {
+            if(!handCard.currentLocation.equals(handCard.targetLocation)) {
+                handCard.updateLocation();
             }
         }
     }
@@ -205,20 +231,20 @@ public class BattleScreen extends Screen {
             if(mouse.hoverHandCard != handCard
             && mouse.selectedHandCard != handCard) {
                 shapeRenderer.setColor(handCard.color/255f, 0/255f, 0/255f, 1f);
-                shapeRenderer.rect(handCard.handLocation.x, handCard.handLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
+                shapeRenderer.rect(handCard.currentLocation.x, handCard.currentLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
             }
         }
 
         // Hover Over Hand Card //
         if(mouse.hoverHandCard != null
         && mouse.selectedHandCard == null) {
-            shapeRenderer.setColor(65/255f, 0/255f, 0/255f, 1f);
-            shapeRenderer.rect(mouse.hoverHandCard.handLocation.x, 0, Card.WIDTH * 2, Card.HEIGHT * 2);
+            shapeRenderer.setColor(mouse.hoverHandCard.color/255f, 0/255f, 0/255f, 1f);
+            shapeRenderer.rect(mouse.hoverHandCard.currentLocation.x, 0, Card.WIDTH * 2, Card.HEIGHT * 2);
         }
 
         // Card Selected From Hand Or GameBoard //
         if(mouse.selectedHandCard != null) {
-            shapeRenderer.setColor(65/255f, 0/255f, 0/255f, 1f);
+            shapeRenderer.setColor(mouse.selectedHandCard.color/255f, 0/255f, 0/255f, 1f);
             int selectedCardX = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
             int selectedCardY = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
             shapeRenderer.rect(selectedCardX, selectedCardY, Card.WIDTH * 2, Card.HEIGHT * 2);
