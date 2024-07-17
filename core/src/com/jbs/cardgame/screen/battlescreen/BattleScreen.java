@@ -148,11 +148,11 @@ public class BattleScreen extends Screen {
         
         // Place Selected Card Into BoardSlot OR Return Card To Hand //
         if(mouse.selectedHandCard != null) {
-            if(gameBoard.placeCardCheck(mouse.selectedHandCard, targetLocation)) {
+            if(gameBoard.placeCardOnBoard(camera, mouse.selectedHandCard, targetLocation)) {
                 battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
                 battlePlayerList.get(0).updateHandLocations();
             } else {
-                    float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
+                float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
                 float diffY = (mouse.selectedHandCard.targetLocation.y - BattlePlayer.HAND_Y_OFFSET) - (mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y);
                 
                 if(Math.abs(diffX) < Card.MOVE_SPEED && Math.abs(diffY) < Card.MOVE_SPEED) {
@@ -219,7 +219,7 @@ public class BattleScreen extends Screen {
     public void render() {
         ScreenUtils.clear(0/255f, 0/255f, 15/255f, 1);
 
-        gameBoard.render(camera, shapeRenderer);
+        gameBoard.render(camera, spriteBatch, shapeRenderer);
         if(gamePhase != null) {
             gamePhase.render(camera, cameraTop, shapeRenderer, mouse, gameBoard, battlePlayerList, currentBattlePlayer);
         }
@@ -264,8 +264,8 @@ public class BattleScreen extends Screen {
     public void renderDebugData() {
         spriteBatch.setProjectionMatrix(cameraDebug.combined);
         spriteBatch.begin();
-        font.setColor(Color.WHITE);
 
+        font.setColor(Color.WHITE);
         font.draw(spriteBatch, "FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()), 1205, 767);
         
         font.draw(spriteBatch, "Mouse X: " + mouse.rect.location.x + ", Y: " + mouse.rect.location.y, 3, 765);

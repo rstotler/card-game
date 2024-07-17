@@ -21,4 +21,8 @@ public class Point {
     public boolean equals(Point point) {
         return x == point.x && y == point.y;
     }
+
+    public String toString() {
+        return "Point X: " + x + ", Y: " + y;
+    }
 }
