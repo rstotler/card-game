@@ -14,6 +14,7 @@ import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
+import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.Point;
 import com.jbs.cardgame.screen.Rect;
 import com.jbs.cardgame.screen.Screen;
@@ -23,6 +24,8 @@ import com.jbs.cardgame.screen.battlescreen.gamephase.GamePhase;
 public class BattleScreen extends Screen {
     public OrthographicCamera cameraTop;
     public OrthographicCamera cameraDebug;
+    
+    public ImageManager imageManager;
     
     public GamePhase gamePhase;
     public GameBoard gameBoard;
@@ -37,6 +40,8 @@ public class BattleScreen extends Screen {
         cameraTop.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cameraDebug = new OrthographicCamera();
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        
+        imageManager = new ImageManager();
 
         gamePhase = new Deal();
         gameBoard = new GameBoard();
@@ -219,7 +224,7 @@ public class BattleScreen extends Screen {
     public void render() {
         ScreenUtils.clear(0/255f, 0/255f, 15/255f, 1);
 
-        gameBoard.render(camera, spriteBatch, shapeRenderer);
+        gameBoard.render(camera, cameraTop, imageManager, spriteBatch, shapeRenderer);
         if(gamePhase != null) {
             gamePhase.render(camera, cameraTop, shapeRenderer, mouse, gameBoard, battlePlayerList, currentBattlePlayer);
         }
@@ -290,7 +295,11 @@ public class BattleScreen extends Screen {
     }
 
     public void dispose() {
+        imageManager.dispose();
+        Card.frameBufferCard.dispose();
+
         spriteBatch.dispose();
         shapeRenderer.dispose();
+        font.dispose();
     }
 }

@@ -2,12 +2,14 @@ package com.jbs.cardgame.entity;
 
 import java.util.Random;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.jbs.cardgame.entity.board.BoardSlot;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.jbs.cardgame.Settings;
+import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.Point;
 
 public class Card {
@@ -15,11 +17,12 @@ public class Card {
     public static final int HEIGHT = 120;
     public static final float MOVE_SPEED = 70.0f;
 
+    public static FrameBuffer frameBufferCard = new FrameBuffer(Pixmap.Format.RGBA8888, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, false);
+
     public int[] powerRating; // 0 - Top, 1 - Right, 2 - Bottom, 3 - Left
 
     public Point currentLocation;
     public Point targetLocation;
-
     public Point selectedCardOffset;
 
     public int color;
@@ -32,27 +35,25 @@ public class Card {
 
         currentLocation = new Point(0, 0);
         targetLocation = new Point(0, 0);
-
         selectedCardOffset = new Point(0, 0);
 
         color = new Random().nextInt(35) + 15;
     }
 
-    public void render(OrthographicCamera camera, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer, BitmapFont font) {
+    public void bufferCardImage(OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch) {
+        frameBufferCard.begin();
+        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
-        // Card //
-        // shapeRenderer.begin(ShapeType.Filled);
-        // shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.setColor(color/255f, 0/255f, 0/255f, 1f);
-        shapeRenderer.rect(currentLocation.x + BoardSlot.PADDING, currentLocation.y + BoardSlot.PADDING, Card.WIDTH, Card.HEIGHT);
-        // shapeRenderer.end();
-
-        // Power Rating //
-        spriteBatch.setProjectionMatrix(camera.combined);
+        spriteBatch.setProjectionMatrix(cameraTop.combined);
         spriteBatch.begin();
-        font.setColor(Color.WHITE);
-        font.draw(spriteBatch, "Test", currentLocation.x + BoardSlot.PADDING, currentLocation.y + BoardSlot.PADDING);
+        spriteBatch.draw(imageManager.cardBackTexture, 0, 0);
+
+        //font.setColor(Color.WHITE);
+        //font.draw(spriteBatch, "1234567890", 50, 50, 150, 10, false);
+        
         spriteBatch.end();
+        frameBufferCard.end();
     }
 
     public void updateLocation() {
