@@ -7,7 +7,7 @@ import com.jbs.cardgame.screen.Point;
 public class Card {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 120;
-    public static final float MOVE_SPEED = 50.0f;
+    public static final float MOVE_SPEED = 70.0f;
 
     public Point currentLocation;
     public Point targetLocation;

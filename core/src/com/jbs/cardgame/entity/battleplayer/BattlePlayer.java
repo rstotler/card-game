@@ -40,6 +40,15 @@ public class BattlePlayer {
         }
     }
 
+    public void removeCardFromHand(Card targetCard) {
+        for(int i = 0; i < hand.size(); i++) {
+            if(hand.get(i) == targetCard) {
+                hand.remove(i);
+                break;
+            }
+        }
+    }
+
     public void updateHandLocations() {
         for(int i = 0; i < hand.size(); i++) {
             int handWidth = (Card.WIDTH * 2) + (HAND_OVERLAP_WIDTH * (hand.size() - 1));

@@ -14,6 +14,7 @@ import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
+import com.jbs.cardgame.screen.Point;
 import com.jbs.cardgame.screen.Rect;
 import com.jbs.cardgame.screen.Screen;
 import com.jbs.cardgame.screen.battlescreen.gamephase.Deal;
@@ -140,11 +141,18 @@ public class BattleScreen extends Screen {
 
     public void leftClickUp() {
         mouse.leftClick = false;
+
+        int xLoc = (int) (mouse.rect.location.x - 640 + ((camera.position.x * 2) / camera.zoom));
+        int yLoc = (int) (mouse.rect.location.y - 384 + ((camera.position.y * 2) / camera.zoom));
+        Point targetLocation = new Point(xLoc, yLoc);
         
         // Place Selected Card Into BoardSlot OR Return Card To Hand //
         if(mouse.selectedHandCard != null) {
-            if(!gameBoard.placeCardCheck(mouse)) {
-                float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
+            if(gameBoard.placeCardCheck(mouse.selectedHandCard, targetLocation)) {
+                battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
+                battlePlayerList.get(0).updateHandLocations();
+            } else {
+                    float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
                 float diffY = (mouse.selectedHandCard.targetLocation.y - BattlePlayer.HAND_Y_OFFSET) - (mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y);
                 
                 if(Math.abs(diffX) < Card.MOVE_SPEED && Math.abs(diffY) < Card.MOVE_SPEED) {
@@ -275,8 +283,8 @@ public class BattleScreen extends Screen {
     }
 
     public void centerCamera() {
-        int xLoc = ((gameBoard.cardsWidth * Card.WIDTH) / 2);
-        int yLoc = ((gameBoard.cardsHeight * Card.HEIGHT) / 2);
+        int xLoc = gameBoard.getSize().width / 2;
+        int yLoc = gameBoard.getSize().height / 2;
         camera.position.set(xLoc, yLoc, 0);
         camera.update();
     }
