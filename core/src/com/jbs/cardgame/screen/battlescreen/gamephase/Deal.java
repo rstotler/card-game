@@ -3,18 +3,18 @@ package com.jbs.cardgame.screen.battlescreen.gamephase;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.component.Mouse;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
-import com.jbs.cardgame.screen.Point;
+import com.jbs.cardgame.screen.ImageManager;
+import com.jbs.cardgame.screen.utility.Point;
 
 public class Deal extends GamePhase {
     public final int DEAL_AMOUNT = 7;
-    public final boolean FAST_DEAL = true;
+    public final boolean FAST_DEAL = false;
 
     public float dealPercent;
     public float dealCount;
@@ -55,9 +55,9 @@ public class Deal extends GamePhase {
         return "";
     }
 
-    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ShapeRenderer shapeRenderer, Mouse mouse, GameBoard gameBoard, ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentBattlePlayer) {
-        shapeRenderer.begin(ShapeType.Filled);
-        shapeRenderer.setProjectionMatrix(cameraTop.combined);
+    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, SpriteBatch spriteBatch, ImageManager imageManager, Mouse mouse, GameBoard gameBoard, ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentBattlePlayer) {
+        spriteBatch.setProjectionMatrix(cameraTop.combined);
+        spriteBatch.begin();
 
         // Deck //
         int deckX = (Settings.SCREEN_WIDTH / 2) - Card.WIDTH;
@@ -66,18 +66,18 @@ public class Deal extends GamePhase {
         int currentBattlePlayerIndex = battlePlayerList.indexOf(currentBattlePlayer);
         if(!(currentBattlePlayerIndex == battlePlayerList.size() - 1
         && dealCount >= DEAL_AMOUNT - 1)) {
-            shapeRenderer.setColor(40/255f, 0/255f, 0/255f, 1f);
-            shapeRenderer.rect(deckX, deckY, Card.WIDTH * 2, Card.HEIGHT * 2);
+            spriteBatch.draw(imageManager.cardBackTexture, deckX, deckY, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);
+            spriteBatch.draw(imageManager.cardBorderTexture, deckX, deckY, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);
         }
         
         // Card Being Dealt //
         if(dealCount < DEAL_AMOUNT) {
-            shapeRenderer.setColor(55/255f, 0/255f, 0/255f, 1f);
             Point dealDestination = BattlePlayer.getPlayerScreenLocation(currentBattlePlayerIndex, battlePlayerList.size());
             Point dealingCardLocation = Point.getPointAlongLine(deckLocation, dealDestination, dealPercent);
-            shapeRenderer.rect(dealingCardLocation.x, dealingCardLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
+            spriteBatch.draw(imageManager.cardBackTexture, dealingCardLocation.x, dealingCardLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);
+            spriteBatch.draw(imageManager.cardBorderTexture, dealingCardLocation.x, dealingCardLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);
         }
         
-        shapeRenderer.end();
+        spriteBatch.end();
     }
 }

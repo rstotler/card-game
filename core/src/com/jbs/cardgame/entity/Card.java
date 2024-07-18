@@ -11,8 +11,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.jbs.cardgame.Settings;
+import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.screen.ImageManager;
-import com.jbs.cardgame.screen.Point;
+import com.jbs.cardgame.screen.utility.Point;
+import com.jbs.cardgame.screen.utility.RGBColor;
 
 public class Card {
     public static final int WIDTH = 80;
@@ -28,6 +30,8 @@ public class Card {
     public Point targetLocation;
     public Point selectedCardOffset;
 
+    public BattlePlayer currentOwnerInBattle;
+
     public Card() {
         powerRating = new int[4];
         for(int i = 0; i < 4; i++) {
@@ -37,9 +41,11 @@ public class Card {
         currentLocation = new Point(0, 0);
         targetLocation = new Point(0, 0);
         selectedCardOffset = new Point(0, 0);
+
+        currentOwnerInBattle = null;
     }
 
-    public void bufferCardImage(OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch) {
+    public void bufferCardImage(OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, RGBColor cardColor) {
         frameBufferCard.begin();
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -50,9 +56,9 @@ public class Card {
         int destFunc = spriteBatch.getBlendDstFunc();
         spriteBatch.setShader(imageManager.shaderProgramColorChannel);
 
-        imageManager.shaderProgramColorChannel.setUniformf("target_r", 1.0f);
-        imageManager.shaderProgramColorChannel.setUniformf("target_g", 0.0f);
-        imageManager.shaderProgramColorChannel.setUniformf("target_b", 0.0f);
+        imageManager.shaderProgramColorChannel.setUniformf("target_r", cardColor.r/255f);
+        imageManager.shaderProgramColorChannel.setUniformf("target_g", cardColor.g/255f);
+        imageManager.shaderProgramColorChannel.setUniformf("target_b", cardColor.b/255f);
         imageManager.shaderProgramColorChannel.setUniformf("target_alpha", 1.0f);
 
         spriteBatch.draw(imageManager.cardBackTexture, 0, 0);
@@ -63,7 +69,7 @@ public class Card {
         // Power Rating //
         font.setColor(Color.WHITE);
         for(int i = 0; i < 4; i++) {
-            Point attackRatingNumLoc = new Point(WIDTH - 28, HEIGHT - 8);
+            Point attackRatingNumLoc = new Point(WIDTH - 26, HEIGHT - 8);
             if(i == 1) {
                 attackRatingNumLoc.x += 9;
                 attackRatingNumLoc.y -= 15;

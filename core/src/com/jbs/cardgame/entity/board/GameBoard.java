@@ -9,8 +9,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.ImageManager;
-import com.jbs.cardgame.screen.Point;
-import com.jbs.cardgame.screen.Rect;
+import com.jbs.cardgame.screen.utility.Point;
+import com.jbs.cardgame.screen.utility.RGBColor;
+import com.jbs.cardgame.screen.utility.Rect;
 
 public class GameBoard {
     public int cardsWidth;
@@ -54,36 +55,20 @@ public class GameBoard {
 
                 // Render BoardSlot Card //
                 if(targetBoardSlot.card != null) {
-                    targetBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch);
+                    RGBColor cardColor = new RGBColor(0, 0, 0);
+                    if(targetBoardSlot.card.currentOwnerInBattle != null) {
+                        cardColor = targetBoardSlot.card.currentOwnerInBattle.cardColor;
+                    }
+
+                    targetBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch, cardColor);
 
                     spriteBatch.setProjectionMatrix(camera.combined);
                     spriteBatch.begin();
-                    spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), targetBoardSlot.card.currentLocation.x + BoardSlot.PADDING, targetBoardSlot.card.currentLocation.y + BoardSlot.PADDING, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
+                    spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), targetBoardSlot.card.currentLocation.x, targetBoardSlot.card.currentLocation.y, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
                     spriteBatch.end();
                 }
             }
         }
-    }
-
-    public boolean placeCardOnBoard(OrthographicCamera camera, Card targetCard, Point targetLocation) {
-        if(targetLocation.x > 0 && targetLocation.y > 0) {
-            int slotX = (int) (targetLocation.x / (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
-            int slotY = (int) (targetLocation.y / (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
-            
-            if(slotX < boardSlot.length && slotY < boardSlot[0].length) {
-                BoardSlot targetBoardSlot = boardSlot[slotX][slotY];
-
-                if(targetBoardSlot.isPlayable
-                && targetBoardSlot.card == null) {
-                    targetCard.currentLocation.x = ((Card.WIDTH + (BoardSlot.PADDING * 2)) * slotX);
-                    targetCard.currentLocation.y = ((Card.HEIGHT + (BoardSlot.PADDING * 2)) * slotY);
-                    targetBoardSlot.card = targetCard;
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public Rect getSize() {

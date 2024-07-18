@@ -3,8 +3,8 @@ package com.jbs.cardgame.component;
 import com.badlogic.gdx.Gdx;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
-import com.jbs.cardgame.screen.Point;
-import com.jbs.cardgame.screen.Rect;
+import com.jbs.cardgame.screen.utility.Point;
+import com.jbs.cardgame.screen.utility.Rect;
 
 public class Mouse {
     public boolean leftClick;

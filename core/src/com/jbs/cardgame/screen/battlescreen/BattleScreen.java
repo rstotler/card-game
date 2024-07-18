@@ -9,17 +9,17 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
+import com.jbs.cardgame.entity.board.BoardSlot;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.ImageManager;
-import com.jbs.cardgame.screen.Point;
-import com.jbs.cardgame.screen.Rect;
 import com.jbs.cardgame.screen.Screen;
 import com.jbs.cardgame.screen.battlescreen.gamephase.Deal;
 import com.jbs.cardgame.screen.battlescreen.gamephase.GamePhase;
+import com.jbs.cardgame.screen.utility.Point;
+import com.jbs.cardgame.screen.utility.Rect;
 
 public class BattleScreen extends Screen {
     public OrthographicCamera cameraTop;
@@ -147,13 +147,14 @@ public class BattleScreen extends Screen {
     public void leftClickUp() {
         mouse.leftClick = false;
 
-        int xLoc = (int) (mouse.rect.location.x - 640 + ((camera.position.x * 2) / camera.zoom));
-        int yLoc = (int) (mouse.rect.location.y - 384 + ((camera.position.y * 2) / camera.zoom));
-        Point targetLocation = new Point(xLoc, yLoc);
-        
         // Place Selected Card Into BoardSlot OR Return Card To Hand //
         if(mouse.selectedHandCard != null) {
-            if(gameBoard.placeCardOnBoard(camera, mouse.selectedHandCard, targetLocation)) {
+            int clickX = (int) (mouse.rect.location.x - 640 + ((camera.position.x * 2) / camera.zoom));
+            int clickY = (int) (mouse.rect.location.y - 384 + ((camera.position.y * 2) / camera.zoom));
+            int slotX = (int) (clickX / (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
+            int slotY = (int) (clickY / (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
+            Point targetSlot = new Point(slotX, slotY);
+            if(battlePlayerList.get(0).placeCardOnGameBoard(camera, gameBoard.boardSlot, mouse.selectedHandCard, targetSlot)) {
                 battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
                 battlePlayerList.get(0).updateHandLocations();
             } else {
@@ -226,7 +227,7 @@ public class BattleScreen extends Screen {
 
         gameBoard.render(camera, cameraTop, imageManager, spriteBatch, shapeRenderer);
         if(gamePhase != null) {
-            gamePhase.render(camera, cameraTop, shapeRenderer, mouse, gameBoard, battlePlayerList, currentBattlePlayer);
+            gamePhase.render(camera, cameraTop, spriteBatch, imageManager, mouse, gameBoard, battlePlayerList, currentBattlePlayer);
         }
         renderPlayerHand();
 
@@ -234,8 +235,6 @@ public class BattleScreen extends Screen {
     }
 
     public void renderPlayerHand() {
-        shapeRenderer.begin(ShapeType.Filled);
-        shapeRenderer.setProjectionMatrix(cameraTop.combined);
 
         // Hand //
         for(int i = battlePlayerList.get(0).hand.size() - 1; i >= 0 ; i--) {
@@ -243,27 +242,39 @@ public class BattleScreen extends Screen {
 
             if(mouse.hoverHandCard != handCard
             && mouse.selectedHandCard != handCard) {
-                shapeRenderer.setColor(50/255f, 0/255f, 0/255f, 1f);
-                shapeRenderer.rect(handCard.currentLocation.x, handCard.currentLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
+                handCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor);
+
+                spriteBatch.setProjectionMatrix(cameraTop.combined);
+                spriteBatch.begin();
+                spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), handCard.currentLocation.x, handCard.currentLocation.y, Settings.SCREEN_WIDTH * 2, Settings.SCREEN_HEIGHT * 2, 0, 0, 1, 1);
+                spriteBatch.end();
             }
         }
 
         // Hover Over Hand Card //
         if(mouse.hoverHandCard != null
         && mouse.selectedHandCard == null) {
-            shapeRenderer.setColor(60/255f, 0/255f, 0/255f, 1f);
-            shapeRenderer.rect(mouse.hoverHandCard.currentLocation.x, 0, Card.WIDTH * 2, Card.HEIGHT * 2);
+            mouse.hoverHandCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor);
+
+            spriteBatch.setProjectionMatrix(cameraTop.combined);
+            spriteBatch.begin();
+            spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), mouse.hoverHandCard.currentLocation.x, 0, Settings.SCREEN_WIDTH * 2, Settings.SCREEN_HEIGHT * 2, 0, 0, 1, 1);
+            spriteBatch.end();
         }
 
         // Card Selected From Hand Or GameBoard //
         if(mouse.selectedHandCard != null) {
-            shapeRenderer.setColor(60/255f, 0/255f, 0/255f, 1f);
             int selectedCardX = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
             int selectedCardY = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
-            shapeRenderer.rect(selectedCardX, selectedCardY, Card.WIDTH * 2, Card.HEIGHT * 2);
+
+            mouse.selectedHandCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor);
+            
+            spriteBatch.setProjectionMatrix(cameraTop.combined);
+            spriteBatch.begin();
+            spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), selectedCardX, selectedCardY, Settings.SCREEN_WIDTH * 2, Settings.SCREEN_HEIGHT * 2, 0, 0, 1, 1);
+            spriteBatch.end();
         }
 
-        shapeRenderer.end();
     }
 
     public void renderDebugData() {

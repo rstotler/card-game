@@ -1,4 +1,4 @@
-package com.jbs.cardgame.screen;
+package com.jbs.cardgame.screen.utility;
 
 public class Rect {
     public Point location;

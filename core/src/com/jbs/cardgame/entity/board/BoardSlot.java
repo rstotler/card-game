@@ -3,7 +3,7 @@ package com.jbs.cardgame.entity.board;
 import java.util.Random;
 
 import com.jbs.cardgame.entity.Card;
-import com.jbs.cardgame.screen.Point;
+import com.jbs.cardgame.screen.utility.Point;
 
 public class BoardSlot {
     public static final int PADDING = 4;

@@ -1,13 +1,17 @@
 package com.jbs.cardgame.entity.battleplayer;
 
 import java.util.ArrayList;
+import java.util.Random;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
-import com.jbs.cardgame.screen.Point;
+import com.jbs.cardgame.entity.board.BoardSlot;
+import com.jbs.cardgame.screen.utility.Point;
+import com.jbs.cardgame.screen.utility.RGBColor;
 
 public class BattlePlayer {
-    public static final int HAND_OVERLAP_WIDTH = 50;
+    public static final int HAND_OVERLAP_WIDTH = 70;
     public static final int HAND_Y_OFFSET = -90;
 
     public boolean isPlayer;
@@ -15,11 +19,15 @@ public class BattlePlayer {
     public ArrayList<Card> deck; // Index 0 - Top Of Deck
     public ArrayList<Card> hand;
 
+    public RGBColor cardColor;
+
     public BattlePlayer(boolean isPlayer) {
         this.isPlayer = isPlayer;
         
         deck = loadDebugDeck();
         hand = new ArrayList<>();
+
+        cardColor = new RGBColor(new Random().nextInt(150), new Random().nextInt(150), new Random().nextInt(150));
     }
 
     public ArrayList<Card> loadDebugDeck() {
@@ -47,6 +55,24 @@ public class BattlePlayer {
                 break;
             }
         }
+    }
+
+    public boolean placeCardOnGameBoard(OrthographicCamera camera, BoardSlot[][] boardSlot, Card targetCard, Point targetSlot) {
+        if(targetSlot.x >= 0 && targetSlot.y >= 0
+        && targetSlot.x < boardSlot.length && targetSlot.y < boardSlot[0].length) {
+            BoardSlot targetBoardSlot = boardSlot[targetSlot.x][targetSlot.y];
+
+            if(targetBoardSlot.isPlayable
+            && targetBoardSlot.card == null) {
+                targetCard.currentLocation.x = ((Card.WIDTH + (BoardSlot.PADDING * 2)) * targetSlot.x) + BoardSlot.PADDING;
+                targetCard.currentLocation.y = ((Card.HEIGHT + (BoardSlot.PADDING * 2)) * targetSlot.y) + BoardSlot.PADDING;
+                targetCard.currentOwnerInBattle = this;
+                targetBoardSlot.card = targetCard;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void updateHandLocations() {
