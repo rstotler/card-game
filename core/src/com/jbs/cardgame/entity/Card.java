@@ -3,9 +3,11 @@ package com.jbs.cardgame.entity;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.jbs.cardgame.Settings;
@@ -18,14 +20,13 @@ public class Card {
     public static final float MOVE_SPEED = 70.0f;
 
     public static FrameBuffer frameBufferCard = new FrameBuffer(Pixmap.Format.RGBA8888, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, false);
-
+    public static BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/Code_New_Roman_18.fnt"), Gdx.files.internal("fonts/Code_New_Roman_18.png"), false);
+    
     public int[] powerRating; // 0 - Top, 1 - Right, 2 - Bottom, 3 - Left
 
     public Point currentLocation;
     public Point targetLocation;
     public Point selectedCardOffset;
-
-    public int color;
 
     public Card() {
         powerRating = new int[4];
@@ -36,8 +37,6 @@ public class Card {
         currentLocation = new Point(0, 0);
         targetLocation = new Point(0, 0);
         selectedCardOffset = new Point(0, 0);
-
-        color = new Random().nextInt(35) + 15;
     }
 
     public void bufferCardImage(OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch) {
@@ -47,11 +46,40 @@ public class Card {
         
         spriteBatch.setProjectionMatrix(cameraTop.combined);
         spriteBatch.begin();
-        spriteBatch.draw(imageManager.cardBackTexture, 0, 0);
+        int srcFunc = spriteBatch.getBlendSrcFunc();
+        int destFunc = spriteBatch.getBlendDstFunc();
+        spriteBatch.setShader(imageManager.shaderProgramColorChannel);
 
-        //font.setColor(Color.WHITE);
-        //font.draw(spriteBatch, "1234567890", 50, 50, 150, 10, false);
-        
+        imageManager.shaderProgramColorChannel.setUniformf("target_r", 1.0f);
+        imageManager.shaderProgramColorChannel.setUniformf("target_g", 0.0f);
+        imageManager.shaderProgramColorChannel.setUniformf("target_b", 0.0f);
+        imageManager.shaderProgramColorChannel.setUniformf("target_alpha", 1.0f);
+
+        spriteBatch.draw(imageManager.cardBackTexture, 0, 0);
+        spriteBatch.setShader(null);
+        spriteBatch.setBlendFunction(srcFunc, destFunc);
+        spriteBatch.draw(imageManager.cardBorderTexture, 0, 0);
+
+        // Power Rating //
+        font.setColor(Color.WHITE);
+        for(int i = 0; i < 4; i++) {
+            Point attackRatingNumLoc = new Point(WIDTH - 28, HEIGHT - 8);
+            if(i == 1) {
+                attackRatingNumLoc.x += 9;
+                attackRatingNumLoc.y -= 15;
+            } else if(i == 2) {
+                attackRatingNumLoc.y -= 30;
+            } else if(i == 3) {
+                attackRatingNumLoc.x -= 9;
+                attackRatingNumLoc.y -= 15;
+            }
+            String powerRatingString = String.valueOf(powerRating[i]);
+            if(powerRating[i] == 10) {
+                powerRatingString = "A";
+            }
+            font.draw(spriteBatch, powerRatingString, attackRatingNumLoc.x, attackRatingNumLoc.y);
+        }
+
         spriteBatch.end();
         frameBufferCard.end();
     }

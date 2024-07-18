@@ -243,7 +243,7 @@ public class BattleScreen extends Screen {
 
             if(mouse.hoverHandCard != handCard
             && mouse.selectedHandCard != handCard) {
-                shapeRenderer.setColor(handCard.color/255f, 0/255f, 0/255f, 1f);
+                shapeRenderer.setColor(50/255f, 0/255f, 0/255f, 1f);
                 shapeRenderer.rect(handCard.currentLocation.x, handCard.currentLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2);
             }
         }
@@ -251,13 +251,13 @@ public class BattleScreen extends Screen {
         // Hover Over Hand Card //
         if(mouse.hoverHandCard != null
         && mouse.selectedHandCard == null) {
-            shapeRenderer.setColor(mouse.hoverHandCard.color/255f, 0/255f, 0/255f, 1f);
+            shapeRenderer.setColor(60/255f, 0/255f, 0/255f, 1f);
             shapeRenderer.rect(mouse.hoverHandCard.currentLocation.x, 0, Card.WIDTH * 2, Card.HEIGHT * 2);
         }
 
         // Card Selected From Hand Or GameBoard //
         if(mouse.selectedHandCard != null) {
-            shapeRenderer.setColor(mouse.selectedHandCard.color/255f, 0/255f, 0/255f, 1f);
+            shapeRenderer.setColor(60/255f, 0/255f, 0/255f, 1f);
             int selectedCardX = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
             int selectedCardY = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
             shapeRenderer.rect(selectedCardX, selectedCardY, Card.WIDTH * 2, Card.HEIGHT * 2);
@@ -297,6 +297,7 @@ public class BattleScreen extends Screen {
     public void dispose() {
         imageManager.dispose();
         Card.frameBufferCard.dispose();
+        Card.font.dispose();
 
         spriteBatch.dispose();
         shapeRenderer.dispose();
