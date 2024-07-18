@@ -14,22 +14,27 @@ import com.jbs.cardgame.screen.utility.Point;
 
 public class Deal extends GamePhase {
     public final int DEAL_AMOUNT = 7;
-    public final boolean FAST_DEAL = false;
+    public final float DEAL_SPEED = .1f;
+    public final boolean FAST_DEAL = true;
 
     public float dealPercent;
     public float dealCount;
 
     public Deal() {
+        super();
+
+        nextGamePhase = new PlayCard();
+        
         dealPercent = 0.0f;
         dealCount = 0;
     }
 
-    public String update(ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentBattlePlayer) {
+    public String update(ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentTurnBattlePlayer) {
 
         // Switch Player Or End GamePhase //
         if(dealCount >= DEAL_AMOUNT) {
-            if(battlePlayerList.contains(currentBattlePlayer)
-            && battlePlayerList.indexOf(currentBattlePlayer) < battlePlayerList.size() - 1) {
+            if(battlePlayerList.contains(currentTurnBattlePlayer)
+            && battlePlayerList.indexOf(currentTurnBattlePlayer) < battlePlayerList.size() - 1) {
                 dealCount = 0;
                 return "Next Player";
             } else {
@@ -42,20 +47,20 @@ public class Deal extends GamePhase {
             if(FAST_DEAL) {
                 dealPercent = 1;
             } else {
-                dealPercent += .065;
+                dealPercent += DEAL_SPEED;
             }
             if(dealPercent >= 1) {
                 dealPercent = 0;
                 dealCount += 1;
 
-                currentBattlePlayer.drawCardToHand();
+                currentTurnBattlePlayer.drawCardToHand();
             }
         }
 
         return "";
     }
 
-    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, SpriteBatch spriteBatch, ImageManager imageManager, Mouse mouse, GameBoard gameBoard, ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentBattlePlayer) {
+    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, SpriteBatch spriteBatch, ImageManager imageManager, Mouse mouse, GameBoard gameBoard, ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentTurnBattlePlayer) {
         spriteBatch.setProjectionMatrix(cameraTop.combined);
         spriteBatch.begin();
 
@@ -63,8 +68,9 @@ public class Deal extends GamePhase {
         int deckX = (Settings.SCREEN_WIDTH / 2) - Card.WIDTH;
         int deckY = (Settings.SCREEN_HEIGHT / 2) - Card.HEIGHT;
         Point deckLocation = new Point(deckX, deckY);
-        int currentBattlePlayerIndex = battlePlayerList.indexOf(currentBattlePlayer);
-        if(!(currentBattlePlayerIndex == battlePlayerList.size() - 1
+        int currentTurnBattlePlayerIndex = battlePlayerList.indexOf(currentTurnBattlePlayer);
+
+        if(!(currentTurnBattlePlayerIndex == battlePlayerList.size() - 1
         && dealCount >= DEAL_AMOUNT - 1)) {
             spriteBatch.draw(imageManager.cardBackTexture, deckX, deckY, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);
             spriteBatch.draw(imageManager.cardBorderTexture, deckX, deckY, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);
@@ -72,7 +78,7 @@ public class Deal extends GamePhase {
         
         // Card Being Dealt //
         if(dealCount < DEAL_AMOUNT) {
-            Point dealDestination = BattlePlayer.getPlayerScreenLocation(currentBattlePlayerIndex, battlePlayerList.size());
+            Point dealDestination = BattlePlayer.getPlayerScreenLocation(currentTurnBattlePlayerIndex, battlePlayerList.size());
             Point dealingCardLocation = Point.getPointAlongLine(deckLocation, dealDestination, dealPercent);
             spriteBatch.draw(imageManager.cardBackTexture, dealingCardLocation.x, dealingCardLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);
             spriteBatch.draw(imageManager.cardBorderTexture, dealingCardLocation.x, dealingCardLocation.y, Card.WIDTH * 2, Card.HEIGHT * 2, 0, 0, 1, 1);

@@ -1,6 +1,6 @@
 package com.jbs.cardgame.screen.battlescreen;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
@@ -16,8 +16,7 @@ import com.jbs.cardgame.entity.board.BoardSlot;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.Screen;
-import com.jbs.cardgame.screen.battlescreen.gamephase.Deal;
-import com.jbs.cardgame.screen.battlescreen.gamephase.GamePhase;
+import com.jbs.cardgame.screen.battlescreen.gamephase.*;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.Rect;
 
@@ -31,7 +30,7 @@ public class BattleScreen extends Screen {
     public GameBoard gameBoard;
 
     public ArrayList<BattlePlayer> battlePlayerList;
-    public BattlePlayer currentBattlePlayer;
+    public BattlePlayer currentTurnBattlePlayer;
 
     public BattleScreen() {
         super();
@@ -50,10 +49,26 @@ public class BattleScreen extends Screen {
         battlePlayerList.add(new BattlePlayer(true));
         battlePlayerList.add(new BattlePlayer(false));
         battlePlayerList.add(new BattlePlayer(false));
-        currentBattlePlayer = battlePlayerList.get(0);
+        currentTurnBattlePlayer = battlePlayerList.get(0);
 
         centerCamera();
         initInputAdapter();
+
+        loadDebugGame();
+    }
+
+    public void loadDebugGame() {
+        for(int i = 0; i < 7; i++) {
+            int slotX = new Random().nextInt(gameBoard.boardSlot.length);
+            int slotY = new Random().nextInt(gameBoard.boardSlot[0].length);
+            BoardSlot randomSlot = gameBoard.boardSlot[slotX][slotY];
+
+            if(randomSlot.card == null && randomSlot.isPlayable) {
+                Card randomCard = new Card();
+                BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
+                randomPlayer.placeCardOnGameBoard(camera, gamePhase, gameBoard, randomCard, new Point(slotX, slotY), currentTurnBattlePlayer, true);
+            }
+        }
     }
 
     public void initInputAdapter() {
@@ -121,8 +136,8 @@ public class BattleScreen extends Screen {
                 if(mouse.leftClick) {
                     if(mouse.selectedHandCard == null) {
                         moveY = Gdx.graphics.getHeight() - moveY;
-                        int moveDiffX = (mouse.rect.location.x - moveX) / 2;
-                        int moveDiffY = (mouse.rect.location.y - moveY) / 2;
+                        int moveDiffX = (int) (mouse.rect.location.x - (moveX * Settings.SIZE_RATIO_X)) / 2;
+                        int moveDiffY = (int) (mouse.rect.location.y - (moveY * Settings.SIZE_RATIO_Y)) / 2;
                         moveCamera(moveDiffX, moveDiffY);
                     }
                 }
@@ -151,22 +166,32 @@ public class BattleScreen extends Screen {
         if(mouse.selectedHandCard != null) {
             int clickX = (int) (mouse.rect.location.x - 640 + ((camera.position.x * 2) / camera.zoom));
             int clickY = (int) (mouse.rect.location.y - 384 + ((camera.position.y * 2) / camera.zoom));
-            int slotX = (int) (clickX / (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
-            int slotY = (int) (clickY / (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
-            Point targetSlot = new Point(slotX, slotY);
-            if(battlePlayerList.get(0).placeCardOnGameBoard(camera, gameBoard.boardSlot, mouse.selectedHandCard, targetSlot)) {
-                battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
-                battlePlayerList.get(0).updateHandLocations();
-            } else {
-                float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
-                float diffY = (mouse.selectedHandCard.targetLocation.y - BattlePlayer.HAND_Y_OFFSET) - (mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y);
+            
+            if(clickX >= 0 && clickY >= 0) {
+                int slotX = (int) (clickX / (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
+                int slotY = (int) (clickY / (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
+                Point targetSlot = new Point(slotX, slotY);
                 
-                if(Math.abs(diffX) < Card.MOVE_SPEED && Math.abs(diffY) < Card.MOVE_SPEED) {
-                    mouse.selectedHandCard.currentLocation.x = mouse.selectedHandCard.targetLocation.x;
-                    mouse.selectedHandCard.currentLocation.y = mouse.selectedHandCard.targetLocation.y;
-                } else {
-                    mouse.selectedHandCard.currentLocation.x = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
-                    mouse.selectedHandCard.currentLocation.y = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
+                // Place Card On Board //
+                if(battlePlayerList.get(0).placeCardOnGameBoard(camera, gamePhase, gameBoard, mouse.selectedHandCard, targetSlot, currentTurnBattlePlayer, false)) {
+                    battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
+                    battlePlayerList.get(0).updateHandLocations();
+
+                    gamePhase = new FlipChecks();
+                }
+                
+                // Return Card To Hand //
+                else {
+                    float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
+                    float diffY = (mouse.selectedHandCard.targetLocation.y - BattlePlayer.HAND_Y_OFFSET) - (mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y);
+                    
+                    if(Math.abs(diffX) < Card.MOVE_SPEED && Math.abs(diffY) < Card.MOVE_SPEED) {
+                        mouse.selectedHandCard.currentLocation.x = mouse.selectedHandCard.targetLocation.x;
+                        mouse.selectedHandCard.currentLocation.y = mouse.selectedHandCard.targetLocation.y;
+                    } else {
+                        mouse.selectedHandCard.currentLocation.x = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
+                        mouse.selectedHandCard.currentLocation.y = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
+                    }
                 }
             }
             
@@ -185,12 +210,12 @@ public class BattleScreen extends Screen {
 
         // Update GamePhase //
         if(gamePhase != null) {
-            String gamePhaseReturnStatus = gamePhase.update(battlePlayerList, currentBattlePlayer);
+            String gamePhaseReturnStatus = gamePhase.update(battlePlayerList, currentTurnBattlePlayer);
             if(gamePhaseReturnStatus.equals("Next Player")) {
                 setNextPlayer();
             } else if(gamePhaseReturnStatus.equals("End GamePhase")) {
                 setNextPlayer();
-                gamePhase = null;
+                gamePhase = gamePhase.nextGamePhase;
             }
         }
     }
@@ -227,7 +252,7 @@ public class BattleScreen extends Screen {
 
         gameBoard.render(camera, cameraTop, imageManager, spriteBatch, shapeRenderer);
         if(gamePhase != null) {
-            gamePhase.render(camera, cameraTop, spriteBatch, imageManager, mouse, gameBoard, battlePlayerList, currentBattlePlayer);
+            gamePhase.render(camera, cameraTop, spriteBatch, imageManager, mouse, gameBoard, battlePlayerList, currentTurnBattlePlayer);
         }
         renderPlayerHand();
 
@@ -290,11 +315,11 @@ public class BattleScreen extends Screen {
     }
 
     public void setNextPlayer() {
-        int currentPlayerIndex = battlePlayerList.indexOf(currentBattlePlayer);
+        int currentPlayerIndex = battlePlayerList.indexOf(currentTurnBattlePlayer);
         if(currentPlayerIndex == battlePlayerList.size() - 1) {
-            currentBattlePlayer = battlePlayerList.get(0);
+            currentTurnBattlePlayer = battlePlayerList.get(0);
         } else {
-            currentBattlePlayer = battlePlayerList.get(currentPlayerIndex + 1);
+            currentTurnBattlePlayer = battlePlayerList.get(currentPlayerIndex + 1);
         }
     }
 

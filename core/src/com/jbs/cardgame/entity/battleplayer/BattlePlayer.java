@@ -7,11 +7,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.board.BoardSlot;
+import com.jbs.cardgame.entity.board.GameBoard;
+import com.jbs.cardgame.screen.battlescreen.gamephase.GamePhase;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.RGBColor;
 
 public class BattlePlayer {
-    public static final int HAND_OVERLAP_WIDTH = 70;
+    public static final int HAND_OVERLAP_WIDTH = 75;
     public static final int HAND_Y_OFFSET = -90;
 
     public boolean isPlayer;
@@ -57,21 +59,31 @@ public class BattlePlayer {
         }
     }
 
-    public boolean placeCardOnGameBoard(OrthographicCamera camera, BoardSlot[][] boardSlot, Card targetCard, Point targetSlot) {
-        if(targetSlot.x >= 0 && targetSlot.y >= 0
-        && targetSlot.x < boardSlot.length && targetSlot.y < boardSlot[0].length) {
-            BoardSlot targetBoardSlot = boardSlot[targetSlot.x][targetSlot.y];
-
-            if(targetBoardSlot.isPlayable
-            && targetBoardSlot.card == null) {
-                targetCard.currentLocation.x = ((Card.WIDTH + (BoardSlot.PADDING * 2)) * targetSlot.x) + BoardSlot.PADDING;
-                targetCard.currentLocation.y = ((Card.HEIGHT + (BoardSlot.PADDING * 2)) * targetSlot.y) + BoardSlot.PADDING;
-                targetCard.currentOwnerInBattle = this;
-                targetBoardSlot.card = targetCard;
-                return true;
-            }
+    public boolean placeCardOnGameBoard(OrthographicCamera camera, GamePhase gamePhase, GameBoard gameBoard, Card targetCard, Point targetSlot, BattlePlayer currentTurnBattlePlayer, boolean ignoreTurn) {
+        String currentGamePhase = "";
+        if(gamePhase != null) {
+            currentGamePhase = gamePhase.getClass().toString().substring(gamePhase.getClass().toString().lastIndexOf(".") + 1);
         }
 
+        if(ignoreTurn
+        || (currentGamePhase.equals("PlayCard")
+        && currentTurnBattlePlayer == this)) {
+            if(targetSlot.x >= 0 && targetSlot.y >= 0
+            && targetSlot.x < gameBoard.boardSlot.length && targetSlot.y < gameBoard.boardSlot[0].length) {
+                BoardSlot targetBoardSlot = gameBoard.boardSlot[targetSlot.x][targetSlot.y];
+    
+                if(targetBoardSlot.isPlayable
+                && targetBoardSlot.card == null) {
+                    targetCard.currentLocation.x = ((Card.WIDTH + (BoardSlot.PADDING * 2)) * targetSlot.x) + BoardSlot.PADDING;
+                    targetCard.currentLocation.y = ((Card.HEIGHT + (BoardSlot.PADDING * 2)) * targetSlot.y) + BoardSlot.PADDING;
+                    targetCard.currentOwnerInBattle = this;
+                    targetBoardSlot.card = targetCard;
+    
+                    return true;
+                }
+            }
+        }
+        
         return false;
     }
 

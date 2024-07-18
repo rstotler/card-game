@@ -71,6 +71,13 @@ public class GameBoard {
         }
     }
 
+    public void flipSurroundingCardsCheck(BoardSlot centerBoardSlot) {
+        for(int i = 0; i < 4; i++) {
+            Card centerCard = centerBoardSlot.card;
+            centerCard.flipCheck(this, centerBoardSlot, i);
+        }
+    }
+
     public Rect getSize() {
         int width = (Card.WIDTH + (BoardSlot.PADDING * 2)) * boardSlot.length;
         int height = (Card.HEIGHT + (BoardSlot.PADDING * 2)) * boardSlot[0].length;

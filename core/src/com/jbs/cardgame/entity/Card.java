@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
+import com.jbs.cardgame.entity.board.BoardSlot;
+import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.RGBColor;
@@ -69,7 +71,7 @@ public class Card {
         // Power Rating //
         font.setColor(Color.WHITE);
         for(int i = 0; i < 4; i++) {
-            Point attackRatingNumLoc = new Point(WIDTH - 26, HEIGHT - 8);
+            Point attackRatingNumLoc = new Point(WIDTH - 25, HEIGHT - 7);
             if(i == 1) {
                 attackRatingNumLoc.x += 9;
                 attackRatingNumLoc.y -= 15;
@@ -88,6 +90,31 @@ public class Card {
 
         spriteBatch.end();
         frameBufferCard.end();
+    }
+
+    public boolean flipCheck(GameBoard gameBoard, BoardSlot centerBoardSlot, int targetCardIndex) {
+
+        // Get Target Slot //
+        int targetSlotX = centerBoardSlot.location.x;
+        int targetSlotY = centerBoardSlot.location.y;
+        if(targetCardIndex == 0) {
+            targetSlotY += 1;
+        } else if(targetCardIndex == 1) {
+            targetSlotX += 1;
+        } else if(targetCardIndex == 2) {
+            targetSlotY -= 1;
+        } else if(targetCardIndex == 3) {
+            targetSlotX -= 1;
+        }
+
+        if(targetSlotX >= 0 && targetSlotX < gameBoard.boardSlot.length
+        && targetSlotY >= 0 && targetSlotY < gameBoard.boardSlot[0].length) {
+            //BoardSlot targetBoardSlot = gameBoard.boardSlot[targetSlotX][targetSlotY];
+
+
+        }
+
+        return false;
     }
 
     public void updateLocation() {
