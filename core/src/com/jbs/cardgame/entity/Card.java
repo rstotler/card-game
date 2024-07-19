@@ -48,6 +48,11 @@ public class Card {
         currentOwnerInBattle = null;
     }
 
+    public Card(int[] powerRatingList) {
+        this();
+        powerRating = powerRatingList;
+    }
+
     public void bufferCardImage(OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, RGBColor cardColor, BoardSlot targetBoardSlot) {
         frameBufferCard.begin();
         Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -96,6 +101,8 @@ public class Card {
             String powerRatingString = String.valueOf(powerRatingNum);
             if(powerRatingNum == 10) {
                 powerRatingString = "A";
+            } else if(powerRatingNum == 11) {
+                powerRatingString = "S";
             }
 
             font.draw(spriteBatch, powerRatingString, attackRatingNumLoc.x, attackRatingNumLoc.y);
@@ -167,8 +174,8 @@ public class Card {
         && !targetBoardSlot.element.equals("")) {
             if(targetBoardSlot.element.equals(element)) {
                 attackPower += 1;
-                if(attackPower == 11) {
-                    attackPower = 10;
+                if(attackPower == 12) {
+                    attackPower = 11;
                 }
             } else {
                 attackPower -= 1;
@@ -178,7 +185,7 @@ public class Card {
         return attackPower;
     }
 
-    public int getOppositeDirectionIndex(int targetIndex) {
+    public static int getOppositeDirectionIndex(int targetIndex) {
         int oppositeInt = targetIndex + 2;
         if(oppositeInt >= 4) {
             oppositeInt = oppositeInt % 4;

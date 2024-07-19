@@ -82,13 +82,13 @@ public class GameBoard {
 
                     targetBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch, cardColor, targetBoardSlot);
                     
-                    // Render Flipping Card OR Default Card //
                     spriteBatch.setProjectionMatrix(camera.combined);
                     spriteBatch.begin();
                     
+                    // Render Flipping Cards OR Cards On Board //
                     if(gamePhase != null && gamePhase.toString().equals("FlipChecks")
                     && ((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)) {
-                        ((FlipChecks) gamePhase).renderFlippingCard(spriteBatch, targetBoardSlot);
+                        ((FlipChecks) gamePhase).renderCards(spriteBatch, targetBoardSlot);
                     } else {
                         spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), targetBoardSlot.card.currentLocation.x, targetBoardSlot.card.currentLocation.y, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
                     }

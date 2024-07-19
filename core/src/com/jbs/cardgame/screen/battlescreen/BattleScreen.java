@@ -17,6 +17,7 @@ import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.Screen;
 import com.jbs.cardgame.screen.battlescreen.gamephase.*;
+import com.jbs.cardgame.screen.battlescreen.gamephase.gamerule.*;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.Rect;
 
@@ -29,6 +30,7 @@ public class BattleScreen extends Screen {
     public GamePhase gamePhase;
     public GameBoard gameBoard;
 
+    public ArrayList<GameRule> gameRuleList;
     public ArrayList<BattlePlayer> battlePlayerList;
     public BattlePlayer currentTurnBattlePlayer;
 
@@ -45,6 +47,7 @@ public class BattleScreen extends Screen {
         gamePhase = new Deal();
         gameBoard = new GameBoard();
 
+        gameRuleList = new ArrayList<>();
         battlePlayerList = new ArrayList<>();
         battlePlayerList.add(new BattlePlayer(true));
         battlePlayerList.add(new BattlePlayer(false));
@@ -58,17 +61,29 @@ public class BattleScreen extends Screen {
     }
 
     public void loadDebugGame() {
-        for(int i = 0; i < 7; i++) {
-            int slotX = new Random().nextInt(gameBoard.boardSlot.length);
-            int slotY = new Random().nextInt(gameBoard.boardSlot[0].length);
-            BoardSlot randomSlot = gameBoard.boardSlot[slotX][slotY];
+        gameRuleList.add(new Same());
+        gameRuleList.add(new Plus());
+        gameRuleList.add(new Combo());
 
-            if(randomSlot.card == null && randomSlot.isPlayable) {
-                Card randomCard = new Card();
-                BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
-                randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, randomCard, new Point(slotX, slotY), currentTurnBattlePlayer, true);
-            }
-        }
+        // Load Random Cards //
+        // for(int i = 0; i < 7; i++) {
+        //     int slotX = new Random().nextInt(gameBoard.boardSlot.length);
+        //     int slotY = new Random().nextInt(gameBoard.boardSlot[0].length);
+        //     BoardSlot randomSlot = gameBoard.boardSlot[slotX][slotY];
+
+        //     if(randomSlot.card == null && randomSlot.isPlayable) {
+        //         Card randomCard = new Card();
+        //         BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
+        //         randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, randomCard, new Point(slotX, slotY), null, true);
+        //     }
+        // }
+
+        // Load Same Rule Check Cards //
+        Card sameCard1 = new Card(new int[] {4, 4, 4, 4});
+        Card sameCard2 = new Card(new int[] {6, 6, 6, 6});
+        BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard1, new Point(1, 0), null, true);
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard2, new Point(0, 1), null, true);
     }
 
     public void initInputAdapter() {
@@ -136,6 +151,8 @@ public class BattleScreen extends Screen {
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
                 if(button == 0) {
                     leftClickUp();
+                } else if(button == 1) {
+                    rightClickUp();
                 }
                 return true;
             }
@@ -212,6 +229,17 @@ public class BattleScreen extends Screen {
             }
             
             mouse.selectedHandCard = null;
+        }
+    }
+
+    public void rightClickUp() {
+        if(mouse.hoverHandCard != null) {
+            for(int i = 0; i < 4; i++) {
+                mouse.hoverHandCard.powerRating[i] += 1;
+                if(mouse.hoverHandCard.powerRating[i] == 12) {
+                    mouse.hoverHandCard.powerRating[i] = 1;
+                }
+            }
         }
     }
 
@@ -355,6 +383,7 @@ public class BattleScreen extends Screen {
         imageManager.dispose();
         Card.frameBufferCard.dispose();
         Card.font.dispose();
+        GameRule.font.dispose();
 
         spriteBatch.dispose();
         shapeRenderer.dispose();

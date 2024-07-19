@@ -12,16 +12,6 @@ import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.battlescreen.BattleScreen;
 import com.jbs.cardgame.screen.utility.Point;
 
-/* 
- * Card Flip Rules:
- * Same - Flips cards when 2 sides are the same.
- * Plus - Flips cards when 2 sides equal the same sum.
- * Minus - Flips cards when 2 sides equal the same difference.
- * Multiply - Flips cards when 2 sides equal the same product.
- * Divide - Flips cards when 2 sides equal the same quotient.
- * Combo - Cascade flips all adjacent cards AFTER one of the above rules are activated.
- */
-
 public class PlayCard extends GamePhase {
     public PlayCard() {
         super();
