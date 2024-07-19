@@ -8,20 +8,17 @@ import com.jbs.cardgame.component.Mouse;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.ImageManager;
+import com.jbs.cardgame.screen.battlescreen.BattleScreen;
 
 public class PlayCard extends GamePhase {
     public PlayCard() {
         super();
     }
     
-    public String update(ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentTurnBattlePlayer) {
+    public String update(BattleScreen battleScreen) {
         return "";
     }
 
     public void render(OrthographicCamera camera, OrthographicCamera cameraTop, SpriteBatch spriteBatch, ImageManager imageManager, Mouse mouse, GameBoard gameBoard, ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentBattlePlayer) {
-        spriteBatch.setProjectionMatrix(cameraTop.combined);
-        spriteBatch.begin();
-
-        spriteBatch.end();
     }
 }

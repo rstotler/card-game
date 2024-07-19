@@ -10,6 +10,7 @@ import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
 import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.ImageManager;
+import com.jbs.cardgame.screen.battlescreen.BattleScreen;
 import com.jbs.cardgame.screen.utility.Point;
 
 public class Deal extends GamePhase {
@@ -29,12 +30,12 @@ public class Deal extends GamePhase {
         dealCount = 0;
     }
 
-    public String update(ArrayList<BattlePlayer> battlePlayerList, BattlePlayer currentTurnBattlePlayer) {
+    public String update(BattleScreen battleScreen) {
 
         // Switch Player Or End GamePhase //
         if(dealCount >= DEAL_AMOUNT) {
-            if(battlePlayerList.contains(currentTurnBattlePlayer)
-            && battlePlayerList.indexOf(currentTurnBattlePlayer) < battlePlayerList.size() - 1) {
+            if(battleScreen.battlePlayerList.contains(battleScreen.currentTurnBattlePlayer)
+            && battleScreen.battlePlayerList.indexOf(battleScreen.currentTurnBattlePlayer) < battleScreen.battlePlayerList.size() - 1) {
                 dealCount = 0;
                 return "Next Player";
             } else {
@@ -53,7 +54,7 @@ public class Deal extends GamePhase {
                 dealPercent = 0;
                 dealCount += 1;
 
-                currentTurnBattlePlayer.drawCardToHand();
+                battleScreen.currentTurnBattlePlayer.drawCardToHand();
             }
         }
 

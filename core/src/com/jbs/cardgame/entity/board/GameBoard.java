@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.ImageManager;
+import com.jbs.cardgame.screen.battlescreen.gamephase.*;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.RGBColor;
 import com.jbs.cardgame.screen.utility.Rect;
@@ -39,8 +40,8 @@ public class GameBoard {
         }
     }
 
-    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
-        for(int y = 0; y < cardsHeight; y++) {
+    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer, GamePhase gamePhase) {
+        for(int y = cardsHeight - 1; y >= 0; y--) {
             for(int x = 0; x < cardsWidth; x++) {
                 BoardSlot targetBoardSlot = boardSlot[x][y];
                 int xLoc = targetBoardSlot.location.x * (Card.WIDTH + (BoardSlot.PADDING * 2));
@@ -64,17 +65,15 @@ public class GameBoard {
 
                     spriteBatch.setProjectionMatrix(camera.combined);
                     spriteBatch.begin();
-                    spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), targetBoardSlot.card.currentLocation.x, targetBoardSlot.card.currentLocation.y, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
+                    if(gamePhase != null && gamePhase.toString().equals("FlipChecks")
+                    && ((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)) {
+                        ((FlipChecks) gamePhase).renderFlippingCard(spriteBatch, targetBoardSlot);
+                    } else {
+                        spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), targetBoardSlot.card.currentLocation.x, targetBoardSlot.card.currentLocation.y, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
+                    }
                     spriteBatch.end();
                 }
             }
-        }
-    }
-
-    public void flipSurroundingCardsCheck(BoardSlot centerBoardSlot) {
-        for(int i = 0; i < 4; i++) {
-            Card centerCard = centerBoardSlot.card;
-            centerCard.flipCheck(this, centerBoardSlot, i);
         }
     }
 

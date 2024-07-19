@@ -96,6 +96,21 @@ public class BattleScreen extends Screen {
                     battlePlayerList.get(0).updateHandLocations();
                 }
 
+                // (Debug) Reset BattleScreen //
+                else if(key.equals("Space")) {
+                    gamePhase = new Deal();
+                    gameBoard = new GameBoard();
+
+                    battlePlayerList = new ArrayList<>();
+                    battlePlayerList.add(new BattlePlayer(true));
+                    battlePlayerList.add(new BattlePlayer(false));
+                    battlePlayerList.add(new BattlePlayer(false));
+                    currentTurnBattlePlayer = battlePlayerList.get(0);
+
+                    centerCamera();
+                    loadDebugGame();
+                }
+
                 else if(key.equals("Escape")) {
                     System.exit(0);
                 }
@@ -177,7 +192,8 @@ public class BattleScreen extends Screen {
                     battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
                     battlePlayerList.get(0).updateHandLocations();
 
-                    gamePhase = new FlipChecks();
+                    gamePhase = new FlipChecks(this, battlePlayerList.get(0));
+                    FlipChecks.initFlipSurroundingCards(this, gameBoard.boardSlot[slotX][slotY]);
                 }
                 
                 // Return Card To Hand //
@@ -205,12 +221,11 @@ public class BattleScreen extends Screen {
     public void update() {
         mouse.updateLocation();
         updateMouse();
-
         updateHand();
 
         // Update GamePhase //
         if(gamePhase != null) {
-            String gamePhaseReturnStatus = gamePhase.update(battlePlayerList, currentTurnBattlePlayer);
+            String gamePhaseReturnStatus = gamePhase.update(this);
             if(gamePhaseReturnStatus.equals("Next Player")) {
                 setNextPlayer();
             } else if(gamePhaseReturnStatus.equals("End GamePhase")) {
@@ -250,7 +265,7 @@ public class BattleScreen extends Screen {
     public void render() {
         ScreenUtils.clear(0/255f, 0/255f, 15/255f, 1);
 
-        gameBoard.render(camera, cameraTop, imageManager, spriteBatch, shapeRenderer);
+        gameBoard.render(camera, cameraTop, imageManager, spriteBatch, shapeRenderer, gamePhase);
         if(gamePhase != null) {
             gamePhase.render(camera, cameraTop, spriteBatch, imageManager, mouse, gameBoard, battlePlayerList, currentTurnBattlePlayer);
         }

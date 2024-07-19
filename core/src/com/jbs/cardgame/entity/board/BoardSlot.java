@@ -23,4 +23,25 @@ public class BoardSlot {
 
         color = new Random().nextInt(50) + 10;
     }
+
+    public BoardSlot getAdjacentBoardSlot(GameBoard gameBoard, int directionIndex) {
+        int targetSlotX = location.x;
+        int targetSlotY = location.y;
+        if(directionIndex == 0) {
+            targetSlotY += 1;
+        } else if(directionIndex == 1) {
+            targetSlotX += 1;
+        } else if(directionIndex == 2) {
+            targetSlotY -= 1;
+        } else if(directionIndex == 3) {
+            targetSlotX -= 1;
+        }
+
+        if(targetSlotX >= 0 && targetSlotX < gameBoard.boardSlot.length
+        && targetSlotY >= 0 && targetSlotY < gameBoard.boardSlot[0].length) {
+            return gameBoard.boardSlot[targetSlotX][targetSlotY];
+        }
+
+        return null;
+    }
 }

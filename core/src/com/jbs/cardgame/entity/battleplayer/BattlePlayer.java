@@ -60,13 +60,8 @@ public class BattlePlayer {
     }
 
     public boolean placeCardOnGameBoard(OrthographicCamera camera, GamePhase gamePhase, GameBoard gameBoard, Card targetCard, Point targetSlot, BattlePlayer currentTurnBattlePlayer, boolean ignoreTurn) {
-        String currentGamePhase = "";
-        if(gamePhase != null) {
-            currentGamePhase = gamePhase.getClass().toString().substring(gamePhase.getClass().toString().lastIndexOf(".") + 1);
-        }
-
         if(ignoreTurn
-        || (currentGamePhase.equals("PlayCard")
+        || (gamePhase != null && gamePhase.toString().equals("PlayCard")
         && currentTurnBattlePlayer == this)) {
             if(targetSlot.x >= 0 && targetSlot.y >= 0
             && targetSlot.x < gameBoard.boardSlot.length && targetSlot.y < gameBoard.boardSlot[0].length) {

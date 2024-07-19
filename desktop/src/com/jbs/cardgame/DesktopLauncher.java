@@ -8,7 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setWindowedMode(Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT);
-		config.useVsync(true);
+		config.useVsync(Settings.ENABLE_VSYNC);
 		config.setResizable(false);
 		config.setForegroundFPS(Settings.FPS);
 		config.setTitle(Settings.TITLE);
