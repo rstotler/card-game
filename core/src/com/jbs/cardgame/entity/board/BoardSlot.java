@@ -12,6 +12,7 @@ public class BoardSlot {
     public boolean isPlayable;
 
     public Card card;
+    public String element;
 
     public int color;
 
@@ -20,6 +21,11 @@ public class BoardSlot {
         isPlayable = true;
         
         card = null;
+        element = "";
+
+        if(new Random().nextInt(4) == 0) {
+            element = Card.getElementList().get(new Random().nextInt(Card.getElementList().size()));
+        }
 
         color = new Random().nextInt(50) + 10;
     }

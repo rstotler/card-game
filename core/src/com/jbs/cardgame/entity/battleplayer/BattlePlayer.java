@@ -3,7 +3,6 @@ package com.jbs.cardgame.entity.battleplayer;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.board.BoardSlot;
@@ -59,7 +58,7 @@ public class BattlePlayer {
         }
     }
 
-    public boolean placeCardOnGameBoard(OrthographicCamera camera, GamePhase gamePhase, GameBoard gameBoard, Card targetCard, Point targetSlot, BattlePlayer currentTurnBattlePlayer, boolean ignoreTurn) {
+    public boolean placeCardOnGameBoard(GamePhase gamePhase, GameBoard gameBoard, Card targetCard, Point targetSlot, BattlePlayer currentTurnBattlePlayer, boolean ignoreTurn) {
         if(ignoreTurn
         || (gamePhase != null && gamePhase.toString().equals("PlayCard")
         && currentTurnBattlePlayer == this)) {

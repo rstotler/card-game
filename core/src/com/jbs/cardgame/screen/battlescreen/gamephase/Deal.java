@@ -15,8 +15,8 @@ import com.jbs.cardgame.screen.utility.Point;
 
 public class Deal extends GamePhase {
     public final int DEAL_AMOUNT = 7;
-    public final float DEAL_SPEED = .1f;
-    public final boolean FAST_DEAL = true;
+    public final float DEAL_SPEED = .15f;
+    public final boolean FAST_DEAL = false;
 
     public float dealPercent;
     public float dealCount;

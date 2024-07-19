@@ -1,5 +1,7 @@
 package com.jbs.cardgame.entity.board;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -38,6 +40,12 @@ public class GameBoard {
                 boardSlot[x][y] = new BoardSlot(new Point(x, y));
             }
         }
+
+        for(int i = 0; i < 2; i++) {
+            int randomX = new Random().nextInt(cardsWidth);
+            int randomY = new Random().nextInt(cardsHeight);
+            boardSlot[randomX][randomY].isPlayable = false;
+        }
     }
 
     public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer, GamePhase gamePhase) {
@@ -48,11 +56,22 @@ public class GameBoard {
                 int yLoc = targetBoardSlot.location.y * (Card.HEIGHT + (BoardSlot.PADDING * 2));
 
                 // Render BoardSlot //
-                shapeRenderer.begin(ShapeType.Filled);
-                shapeRenderer.setProjectionMatrix(camera.combined);
-                shapeRenderer.setColor(0/255f, targetBoardSlot.color/255f, 0/255f, 1f);
-                shapeRenderer.rect(xLoc, yLoc, Card.WIDTH + (BoardSlot.PADDING * 2), Card.HEIGHT + (BoardSlot.PADDING * 2));
-                shapeRenderer.end();
+                if(targetBoardSlot.isPlayable) {
+                    shapeRenderer.begin(ShapeType.Filled);
+                    shapeRenderer.setProjectionMatrix(camera.combined);
+                    shapeRenderer.setColor(0/255f, targetBoardSlot.color/255f, 0/255f, 1f);
+                    shapeRenderer.rect(xLoc, yLoc, Card.WIDTH + (BoardSlot.PADDING * 2), Card.HEIGHT + (BoardSlot.PADDING * 2));
+                    shapeRenderer.end();
+
+                    // Board Slot Element Character //
+                    if(!targetBoardSlot.element.equals("")) {
+                        spriteBatch.setProjectionMatrix(camera.combined);
+                        spriteBatch.begin();
+                        String elementSubstring = targetBoardSlot.element.substring(0, 1) + targetBoardSlot.element.substring(targetBoardSlot.element.length() - 1);
+                        fontCard.draw(spriteBatch, elementSubstring, xLoc + 37, yLoc + 73);
+                        spriteBatch.end();
+                    }
+                }
 
                 // Render BoardSlot Card //
                 if(targetBoardSlot.card != null) {
@@ -61,16 +80,19 @@ public class GameBoard {
                         cardColor = targetBoardSlot.card.currentOwnerInBattle.cardColor;
                     }
 
-                    targetBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch, cardColor);
-
+                    targetBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch, cardColor, targetBoardSlot);
+                    
+                    // Render Flipping Card OR Default Card //
                     spriteBatch.setProjectionMatrix(camera.combined);
                     spriteBatch.begin();
+                    
                     if(gamePhase != null && gamePhase.toString().equals("FlipChecks")
                     && ((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)) {
                         ((FlipChecks) gamePhase).renderFlippingCard(spriteBatch, targetBoardSlot);
                     } else {
                         spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), targetBoardSlot.card.currentLocation.x, targetBoardSlot.card.currentLocation.y, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
                     }
+
                     spriteBatch.end();
                 }
             }

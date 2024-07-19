@@ -1,6 +1,6 @@
 package com.jbs.cardgame.entity;
 
-import java.util.Random;
+import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.battleplayer.BattlePlayer;
+import com.jbs.cardgame.entity.board.BoardSlot;
 import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.RGBColor;
@@ -25,6 +26,7 @@ public class Card {
     public static BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/Code_New_Roman_18.fnt"), Gdx.files.internal("fonts/Code_New_Roman_18.png"), false);
     
     public int[] powerRating; // 0 - Top, 1 - Right, 2 - Bottom, 3 - Left
+    public String element;    // Fire, Ice, Lightning, Earth, Water, Poison, Dark, Holy
 
     public Point currentLocation;
     public Point targetLocation;
@@ -37,6 +39,7 @@ public class Card {
         for(int i = 0; i < 4; i++) {
             powerRating[i] = new Random().nextInt(10) + 1;
         }
+        element = Card.getElementList().get(new Random().nextInt(Card.getElementList().size()));
 
         currentLocation = new Point(0, 0);
         targetLocation = new Point(0, 0);
@@ -45,7 +48,7 @@ public class Card {
         currentOwnerInBattle = null;
     }
 
-    public void bufferCardImage(OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, RGBColor cardColor) {
+    public void bufferCardImage(OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, RGBColor cardColor, BoardSlot targetBoardSlot) {
         frameBufferCard.begin();
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -79,20 +82,38 @@ public class Card {
                 attackRatingNumLoc.x -= 9;
                 attackRatingNumLoc.y -= 15;
             }
-            String powerRatingString = String.valueOf(powerRating[i]);
-            if(powerRating[i] == 10) {
+
+            int powerRatingNum = getPowerRating(i, targetBoardSlot);
+            if(targetBoardSlot != null
+            && !targetBoardSlot.element.equals("")) {
+                if(targetBoardSlot.element.equals(element)) {
+                    font.setColor(Color.GREEN);
+                } else if(!targetBoardSlot.element.equals(element)) {
+                    font.setColor(Color.RED);
+                }
+            }
+
+            String powerRatingString = String.valueOf(powerRatingNum);
+            if(powerRatingNum == 10) {
                 powerRatingString = "A";
             }
+
             font.draw(spriteBatch, powerRatingString, attackRatingNumLoc.x, attackRatingNumLoc.y);
+        }
+
+        // Element //
+        if(!element.equals("")) {
+            String elementSubstring = element.substring(0, 1) + element.substring(element.length() - 1);
+            font.draw(spriteBatch, elementSubstring, 8, 112);
         }
 
         spriteBatch.end();
         frameBufferCard.end();
     }
 
-    public boolean isStrongerThan(Card targetCard, int attackDirectionIndex) {
-        int attackPower = powerRating[attackDirectionIndex];
-        int defensePower = targetCard.powerRating[getOppositeDirectionIndex(attackDirectionIndex)];
+    public boolean isStrongerThan(Card targetCard, int attackDirectionIndex, BoardSlot attackerBoardSlot, BoardSlot defenderBoardSlot) {
+        int attackPower = getPowerRating(attackDirectionIndex, attackerBoardSlot);
+        int defensePower = targetCard.getPowerRating(getOppositeDirectionIndex(attackDirectionIndex), defenderBoardSlot);
 
         return attackPower > defensePower;
     }
@@ -140,6 +161,23 @@ public class Card {
         }
     }
 
+    public int getPowerRating(int attackDirectionIndex, BoardSlot targetBoardSlot) {
+        int attackPower = powerRating[attackDirectionIndex];
+        if(targetBoardSlot != null
+        && !targetBoardSlot.element.equals("")) {
+            if(targetBoardSlot.element.equals(element)) {
+                attackPower += 1;
+                if(attackPower == 11) {
+                    attackPower = 10;
+                }
+            } else {
+                attackPower -= 1;
+            }
+        }
+
+        return attackPower;
+    }
+
     public int getOppositeDirectionIndex(int targetIndex) {
         int oppositeInt = targetIndex + 2;
         if(oppositeInt >= 4) {
@@ -147,5 +185,9 @@ public class Card {
         }
 
         return oppositeInt;
+    }
+
+    public static ArrayList<String> getElementList() {
+        return new ArrayList<>(Arrays.asList("Fire", "Ice", "Lightning", "Earth", "Water", "Poison", "Dark", "Holy"));
     }
 }

@@ -20,8 +20,10 @@ public class FlipChecks extends GamePhase {
     public String currentState;
     public float currentStatePercent;
 
-    public FlipChecks(BattleScreen battleScreen, BattlePlayer attackingPlayer) {
+    public FlipChecks(BattlePlayer attackingPlayer) {
         super();
+
+        nextGamePhase = new PlayCard();
 
         flipCardList = new ArrayList<>();
         this.attackingPlayer = attackingPlayer;
@@ -37,7 +39,7 @@ public class FlipChecks extends GamePhase {
             BoardSlot targetBoardSlot = centerBoardSlot.getAdjacentBoardSlot(battleScreen.gameBoard, i);
             if(targetBoardSlot != null && targetBoardSlot.card != null
             && centerCard.currentOwnerInBattle != targetBoardSlot.card.currentOwnerInBattle
-            && centerCard.isStrongerThan(targetBoardSlot.card, i)) {
+            && centerCard.isStrongerThan(targetBoardSlot.card, i, centerBoardSlot, targetBoardSlot)) {
                 if(battleScreen.gamePhase != null
                 && battleScreen.gamePhase.toString().equals("FlipChecks")) {
                     ((FlipChecks) (battleScreen.gamePhase)).flipCardList.add(targetBoardSlot.card);
@@ -61,7 +63,7 @@ public class FlipChecks extends GamePhase {
             currentStatePercent += .08;
             if(currentStatePercent >= 1) {
                 currentStatePercent = 1.0f;
-                currentState = "";
+                return "End GamePhase";
             }
         }
 

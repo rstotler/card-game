@@ -66,7 +66,7 @@ public class BattleScreen extends Screen {
             if(randomSlot.card == null && randomSlot.isPlayable) {
                 Card randomCard = new Card();
                 BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
-                randomPlayer.placeCardOnGameBoard(camera, gamePhase, gameBoard, randomCard, new Point(slotX, slotY), currentTurnBattlePlayer, true);
+                randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, randomCard, new Point(slotX, slotY), currentTurnBattlePlayer, true);
             }
         }
     }
@@ -188,11 +188,11 @@ public class BattleScreen extends Screen {
                 Point targetSlot = new Point(slotX, slotY);
                 
                 // Place Card On Board //
-                if(battlePlayerList.get(0).placeCardOnGameBoard(camera, gamePhase, gameBoard, mouse.selectedHandCard, targetSlot, currentTurnBattlePlayer, false)) {
+                if(battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, mouse.selectedHandCard, targetSlot, currentTurnBattlePlayer, false)) {
                     battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
                     battlePlayerList.get(0).updateHandLocations();
 
-                    gamePhase = new FlipChecks(this, battlePlayerList.get(0));
+                    gamePhase = new FlipChecks(battlePlayerList.get(0));
                     FlipChecks.initFlipSurroundingCards(this, gameBoard.boardSlot[slotX][slotY]);
                 }
                 
@@ -282,7 +282,7 @@ public class BattleScreen extends Screen {
 
             if(mouse.hoverHandCard != handCard
             && mouse.selectedHandCard != handCard) {
-                handCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor);
+                handCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor, null);
 
                 spriteBatch.setProjectionMatrix(cameraTop.combined);
                 spriteBatch.begin();
@@ -294,7 +294,7 @@ public class BattleScreen extends Screen {
         // Hover Over Hand Card //
         if(mouse.hoverHandCard != null
         && mouse.selectedHandCard == null) {
-            mouse.hoverHandCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor);
+            mouse.hoverHandCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor, null);
 
             spriteBatch.setProjectionMatrix(cameraTop.combined);
             spriteBatch.begin();
@@ -307,14 +307,13 @@ public class BattleScreen extends Screen {
             int selectedCardX = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
             int selectedCardY = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
 
-            mouse.selectedHandCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor);
+            mouse.selectedHandCard.bufferCardImage(cameraTop, imageManager, spriteBatch, battlePlayerList.get(0).cardColor, null);
             
             spriteBatch.setProjectionMatrix(cameraTop.combined);
             spriteBatch.begin();
             spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), selectedCardX, selectedCardY, Settings.SCREEN_WIDTH * 2, Settings.SCREEN_HEIGHT * 2, 0, 0, 1, 1);
             spriteBatch.end();
         }
-
     }
 
     public void renderDebugData() {
@@ -325,6 +324,13 @@ public class BattleScreen extends Screen {
         font.draw(spriteBatch, "FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()), 1205, 767);
         
         font.draw(spriteBatch, "Mouse X: " + mouse.rect.location.x + ", Y: " + mouse.rect.location.y, 3, 765);
+        
+        String gamePhaseString = "None";
+        if(gamePhase != null) {
+            gamePhaseString = gamePhase.toString();
+        }
+        font.draw(spriteBatch, "GamePhase: " + gamePhaseString, 3, 750);
+        font.draw(spriteBatch, "Current Player: " + battlePlayerList.indexOf(currentTurnBattlePlayer), 3, 735);
         
         spriteBatch.end();
     }
