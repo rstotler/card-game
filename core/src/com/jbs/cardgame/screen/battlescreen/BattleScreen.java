@@ -85,10 +85,10 @@ public class BattleScreen extends Screen {
         Card sameCard4 = new Card(new int[] {7, 7, 7, 7});
         BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
         randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard1, new Point(1, 0), null, true);
-        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard2, new Point(0, 1), null, true);
+        battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, sameCard2, new Point(0, 1), null, true);
         randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard3, new Point(2, 1), null, true);
         randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard4, new Point(1, 2), null, true);
-        //battlePlayerList.get(0).hand.add(new Card(new int[] {7, 5, 4, 6}));
+        battlePlayerList.get(0).hand.add(new Card(new int[] {7, 5, 4, 6}));
     }
 
     public void initInputAdapter() {
@@ -210,7 +210,8 @@ public class BattleScreen extends Screen {
                 Point targetSlot = new Point(slotX, slotY);
                 
                 // Place Card On Board //
-                if(battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, mouse.selectedHandCard, targetSlot, currentTurnBattlePlayer, false)) {
+                if(!mouse.hoverHandCheck
+                && battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, mouse.selectedHandCard, targetSlot, currentTurnBattlePlayer, false)) {
                     battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
                     battlePlayerList.get(0).updateHandLocations();
 
@@ -272,14 +273,16 @@ public class BattleScreen extends Screen {
         BattlePlayer player = battlePlayerList.get(0);
 
         // Set HoverCard //
+        mouse.hoverHandCheck = false;
         mouse.hoverHandCard = null;
-        if(mouse.selectedHandCard == null) {
-            for(int i = 0; i < player.hand.size(); i++) {
-                Card handCard = battlePlayerList.get(0).hand.get(i);
-    
-                Rect handCardRect = new Rect(handCard.currentLocation, Card.WIDTH * 2, Card.HEIGHT * 2);
-                if(mouse.rect.rectCollide(handCardRect)
-                && handCard.currentLocation.equals(handCard.targetLocation)) {
+        for(int i = 0; i < player.hand.size(); i++) {
+            Card handCard = battlePlayerList.get(0).hand.get(i);
+
+            Rect handCardRect = new Rect(handCard.currentLocation, Card.WIDTH * 2, Card.HEIGHT * 2);
+            if(mouse.rect.rectCollide(handCardRect)
+            && handCard.currentLocation.equals(handCard.targetLocation)) {
+                mouse.hoverHandCheck = true;
+                if(mouse.selectedHandCard == null) {
                     mouse.hoverHandCard = handCard;
                     break;
                 }

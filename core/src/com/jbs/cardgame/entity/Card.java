@@ -32,6 +32,7 @@ public class Card {
     public Point targetLocation;
     public Point selectedCardOffset;
 
+    public BattlePlayer originalOwnerInBattle;
     public BattlePlayer currentOwnerInBattle;
 
     public Card() {
@@ -45,6 +46,7 @@ public class Card {
         targetLocation = new Point(0, 0);
         selectedCardOffset = new Point(0, 0);
 
+        originalOwnerInBattle = null;
         currentOwnerInBattle = null;
     }
 

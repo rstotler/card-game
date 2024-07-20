@@ -87,8 +87,9 @@ public class GameBoard {
                     
                     // Render Flipping Cards OR Cards On Board //
                     if(gamePhase != null && gamePhase.toString().equals("FlipChecks")
-                    && ((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)) {
-                        ((FlipChecks) gamePhase).renderCards(spriteBatch, targetBoardSlot);
+                    && ((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)
+                    && targetBoardSlot.card.originalOwnerInBattle != ((FlipChecks) gamePhase).attackingPlayer) {
+                        ((FlipChecks) gamePhase).renderFlippingCard(spriteBatch, targetBoardSlot);
                     } else {
                         spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), targetBoardSlot.card.currentLocation.x, targetBoardSlot.card.currentLocation.y, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
                     }

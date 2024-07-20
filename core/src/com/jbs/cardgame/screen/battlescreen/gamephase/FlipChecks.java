@@ -120,6 +120,13 @@ public class FlipChecks extends GamePhase {
             currentStatePercent += .08;
             if(currentStatePercent >= 1) {
                 currentStatePercent = 1.0f;
+
+                for(Card flippingCard : flipCardList) {
+                    if(flippingCard.originalOwnerInBattle != attackingPlayer) {
+                        flippingCard.originalOwnerInBattle = attackingPlayer;
+                    }
+                }
+
                 return "End GamePhase";
             }
         }
@@ -160,7 +167,7 @@ public class FlipChecks extends GamePhase {
         }
     }
 
-    public void renderCards(SpriteBatch spriteBatch, BoardSlot targetBoardSlot) {
+    public void renderFlippingCard(SpriteBatch spriteBatch, BoardSlot targetBoardSlot) {
         float locationModX = 0.0f;
         float locationModY = 0.0f;
         float widthPercent = 1.0f;

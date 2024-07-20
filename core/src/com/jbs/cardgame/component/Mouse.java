@@ -11,6 +11,7 @@ public class Mouse {
 
     public Rect rect;
 
+    public boolean hoverHandCheck;
     public Card hoverHandCard;
     public Card selectedHandCard;
 
@@ -19,6 +20,7 @@ public class Mouse {
 
         rect = new Rect(new Point(0, 0), 1, 1);
 
+        hoverHandCheck = false;
         hoverHandCard = null;
         selectedHandCard = null;
     }

@@ -13,7 +13,7 @@ import com.jbs.cardgame.screen.utility.RGBColor;
 
 public class BattlePlayer {
     public static final int HAND_OVERLAP_WIDTH = 75;
-    public static final int HAND_Y_OFFSET = -90;
+    public static final int HAND_Y_OFFSET = -130;
 
     public boolean isPlayer;
 
@@ -70,6 +70,7 @@ public class BattlePlayer {
                 && targetBoardSlot.card == null) {
                     targetCard.currentLocation.x = ((Card.WIDTH + (BoardSlot.PADDING * 2)) * targetSlot.x) + BoardSlot.PADDING;
                     targetCard.currentLocation.y = ((Card.HEIGHT + (BoardSlot.PADDING * 2)) * targetSlot.y) + BoardSlot.PADDING;
+                    targetCard.originalOwnerInBattle = this;
                     targetCard.currentOwnerInBattle = this;
                     targetBoardSlot.card = targetCard;
     
