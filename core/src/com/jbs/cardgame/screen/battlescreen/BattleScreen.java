@@ -80,10 +80,15 @@ public class BattleScreen extends Screen {
 
         // Load Same Rule Check Cards //
         Card sameCard1 = new Card(new int[] {4, 4, 4, 4});
-        Card sameCard2 = new Card(new int[] {6, 6, 6, 6});
+        Card sameCard2 = new Card(new int[] {5, 5, 5, 5});
+        Card sameCard3 = new Card(new int[] {6, 6, 6, 6});
+        Card sameCard4 = new Card(new int[] {7, 7, 7, 7});
         BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
         randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard1, new Point(1, 0), null, true);
         randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard2, new Point(0, 1), null, true);
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard3, new Point(2, 1), null, true);
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard4, new Point(1, 2), null, true);
+        //battlePlayerList.get(0).hand.add(new Card(new int[] {7, 5, 4, 6}));
     }
 
     public void initInputAdapter() {

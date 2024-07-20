@@ -81,7 +81,7 @@ public class FlipChecks extends GamePhase {
     
     public String update(BattleScreen battleScreen) {
         if(currentState.equals("Display Rule Stage 1")) {
-            currentStatePercent += .1;
+            currentStatePercent += .055;
             if(currentStatePercent >= 1) {
                 currentState = "Display Rule Stage 2";
                 currentStatePercent = 0.0f;
@@ -89,7 +89,7 @@ public class FlipChecks extends GamePhase {
         }
 
         else if(currentState.equals("Display Rule Stage 2")) {
-            currentStatePercent += .35;
+            currentStatePercent += .05;
             if(currentStatePercent >= 1) {
                 currentState = "Display Rule Stage 3";
                 currentStatePercent = 0.0f;
@@ -97,7 +97,7 @@ public class FlipChecks extends GamePhase {
         }
 
         else if(currentState.equals("Display Rule Stage 3")) {
-            currentStatePercent += .1;
+            currentStatePercent += .055;
             if(currentStatePercent >= 1) {
                 currentState = "Flip Cards Stage 1";
                 currentStatePercent = 1.0f;

@@ -18,8 +18,8 @@ public class Same extends GameRule {
                 int defensePower = adjacentBoardSlot.card.getPowerRating(Card.getOppositeDirectionIndex(i), adjacentBoardSlot);
 
                 if(adjacentBoardSlot.card.currentOwnerInBattle != centerBoardSlot.card.currentOwnerInBattle
-                && attackPower == defensePower
-                && !flipCheckGamePhase.flipCardList.contains(adjacentBoardSlot.card)) {
+                && !flipCheckGamePhase.flipCardList.contains(adjacentBoardSlot.card)
+                && attackPower == defensePower) {
                     sameCardList.add(adjacentBoardSlot.card);
                 }
             }
