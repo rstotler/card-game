@@ -43,27 +43,26 @@ public class BattleScreen extends Screen {
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
         imageManager = new ImageManager();
+        initInputAdapter();
 
-        gamePhase = new Deal();
-        gameBoard = new GameBoard();
+        initBattle();
+        centerCamera();
+    }
 
+    public void initBattle() {
         gameRuleList = new ArrayList<>();
+        gameRuleList.add(new Same());
+        gameRuleList.add(new Plus());
+        gameRuleList.add(new Combo());
+
         battlePlayerList = new ArrayList<>();
         battlePlayerList.add(new BattlePlayer(true));
         battlePlayerList.add(new BattlePlayer(false));
         battlePlayerList.add(new BattlePlayer(false));
         currentTurnBattlePlayer = battlePlayerList.get(0);
 
-        centerCamera();
-        initInputAdapter();
-
-        loadDebugGame();
-    }
-
-    public void loadDebugGame() {
-        gameRuleList.add(new Same());
-        gameRuleList.add(new Plus());
-        gameRuleList.add(new Combo());
+        gamePhase = new Deal();
+        gameBoard = new GameBoard(7, 5, 0, 0);
 
         // Load Random Cards //
         // for(int i = 0; i < 7; i++) {
@@ -79,16 +78,37 @@ public class BattleScreen extends Screen {
         // }
 
         // Load Same Rule Check Cards //
-        Card sameCard1 = new Card(new int[] {4, 4, 4, 4});
-        Card sameCard2 = new Card(new int[] {5, 5, 5, 5});
-        Card sameCard3 = new Card(new int[] {6, 6, 6, 6});
-        Card sameCard4 = new Card(new int[] {7, 7, 7, 7});
+        // Card sameCard1 = new Card(new int[] {4, 4, 4, 4});
+        // Card sameCard2 = new Card(new int[] {5, 5, 5, 5});
+        // Card sameCard3 = new Card(new int[] {6, 6, 6, 6});
+        // Card sameCard4 = new Card(new int[] {7, 7, 7, 7});
+        // BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
+        // randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard1, new Point(1, 0), null, true);
+        // battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, sameCard2, new Point(0, 1), null, true);
+        // randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard3, new Point(2, 1), null, true);
+        // randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard4, new Point(1, 2), null, true);
+        // battlePlayerList.get(0).hand.add(new Card(new int[] {7, 5, 4, 6}));
+
+        // Load Combo Rule Check Cards //
         BattlePlayer randomPlayer = battlePlayerList.get(new Random().nextInt(battlePlayerList.size() - 1) + 1);
-        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard1, new Point(1, 0), null, true);
-        battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, sameCard2, new Point(0, 1), null, true);
-        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard3, new Point(2, 1), null, true);
-        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard4, new Point(1, 2), null, true);
-        battlePlayerList.get(0).hand.add(new Card(new int[] {7, 5, 4, 6}));
+        Card sameCard1 = new Card(new int[] {1, 1, 1, 1});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard1, new Point(0, 0), null, true);
+        Card sameCard2 = new Card(new int[] {2, 2, 2, 2});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard2, new Point(1, 0), null, true);
+        Card sameCard3 = new Card(new int[] {3, 3, 3, 3});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard3, new Point(2, 0), null, true);
+        Card sameCard4 = new Card(new int[] {4, 4, 4, 4});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard4, new Point(3, 0), null, true);
+        Card sameCard5 = new Card(new int[] {5, 5, 5, 5});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard5, new Point(4, 0), null, true);
+        Card sameCard6 = new Card(new int[] {6, 6, 6, 6});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard6, new Point(4, 1), null, true);
+        Card sameCard7 = new Card(new int[] {7, 7, 1, 7});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard7, new Point(3, 1), null, true);
+        Card sameCard8 = new Card(new int[] {8, 8, 1, 8});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard8, new Point(2, 1), null, true);
+        Card sameCard9 = new Card(new int[] {8, 8, 8, 8});
+        randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard9, new Point(2, 3), null, true);
     }
 
     public void initInputAdapter() {
@@ -119,7 +139,7 @@ public class BattleScreen extends Screen {
                 // (Debug) Reset BattleScreen //
                 else if(key.equals("Space")) {
                     gamePhase = new Deal();
-                    gameBoard = new GameBoard();
+                    gameBoard = new GameBoard(7, 5, 0, 0);
 
                     battlePlayerList = new ArrayList<>();
                     battlePlayerList.add(new BattlePlayer(true));
@@ -128,7 +148,7 @@ public class BattleScreen extends Screen {
                     currentTurnBattlePlayer = battlePlayerList.get(0);
 
                     centerCamera();
-                    loadDebugGame();
+                    initBattle();
                 }
 
                 else if(key.equals("Escape")) {

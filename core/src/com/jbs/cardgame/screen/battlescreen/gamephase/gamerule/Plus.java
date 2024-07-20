@@ -53,7 +53,15 @@ public class Plus extends GameRule {
         if(highestCountIndex != -1
         && plusCountCardList.get(highestCountIndex).size() > 1) {
             flipCheckGamePhase.activatedRuleList.add(toString());
-            flipCheckGamePhase.flipCardList.addAll(plusCountCardList.get(highestCountIndex));
+            for(Card flipCard : plusCountCardList.get(highestCountIndex)) {
+                if(flipCard.currentOwnerInBattle == flipCheckGamePhase.attackingPlayer) {
+                    flipCard.isCurrentOwner = true;
+                } else {
+                    flipCard.isCurrentOwner = false;
+                }
+                flipCard.gameRuleFlip = true;
+                flipCheckGamePhase.flipCardList.add(flipCard);
+            }
         }
     }
 }

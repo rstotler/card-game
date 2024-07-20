@@ -1,6 +1,6 @@
 package com.jbs.cardgame.screen.battlescreen.gamephase;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,8 +26,10 @@ import com.jbs.cardgame.screen.battlescreen.gamephase.gamerule.GameRule;
 
 public class FlipChecks extends GamePhase {
     public ArrayList<Card> flipCardList;
-    public ArrayList<String> activatedRuleList;
+    public ArrayList<Card> comboFlipList;
     public BattlePlayer attackingPlayer;
+
+    public ArrayList<String> activatedRuleList;
 
     public String currentState;
     public float currentStatePercent;
@@ -38,8 +40,10 @@ public class FlipChecks extends GamePhase {
         nextGamePhase = new PlayCard();
 
         flipCardList = new ArrayList<>();
-        activatedRuleList = new ArrayList<>();
+        comboFlipList = new ArrayList<>();
         this.attackingPlayer = attackingPlayer;
+
+        activatedRuleList = new ArrayList<>();
 
         currentState = "";
         currentStatePercent = 1.0f;
@@ -69,7 +73,10 @@ public class FlipChecks extends GamePhase {
             }
 
             // Set Current State //
-            if(gamePhase.activatedRuleList.size() > 0) {
+            if(gamePhase.flipCardList.size() == 0) {
+                gamePhase.currentState = "Flip Cards Stage 2";
+                gamePhase.currentStatePercent = 1.0f;
+            } else if(gamePhase.activatedRuleList.size() > 0) {
                 gamePhase.currentState = "Display Rule Stage 1";
                 gamePhase.currentStatePercent = 0.0f;
             } else {
@@ -79,6 +86,55 @@ public class FlipChecks extends GamePhase {
         }
     }
     
+    public void initComboFlips(BattleScreen battleScreen) {
+        ArrayList<Card> targetCardList = null;
+        if(comboFlipList.size() > 0) {
+            targetCardList = comboFlipList;
+        } else {
+            targetCardList = flipCardList;
+        }
+        
+        // Remove Cards That Already Belonged To AttackingPlayer    //
+        // And Remove Cards That Did Not Get Flipped Via A GameRule //
+        if(comboFlipList.size() == 0) {
+            ArrayList<Card> deleteCardList = new ArrayList<>();
+            for(Card flipCard : flipCardList) {
+                if(flipCard.isCurrentOwner
+                || !flipCard.gameRuleFlip) {
+                    deleteCardList.add(flipCard);
+                }
+            }
+            for(Card deleteCard : deleteCardList) {
+                flipCardList.remove(deleteCard);
+            }
+        }
+
+        // Initiate New Card Flips //
+        ArrayList<Card> newFlipList = new ArrayList<>();
+        for(Card flipCard : targetCardList) {
+            for(int i = 0; i < 4; i++) {
+                if(flipCard.boardSlot != null) {
+                    BoardSlot adjacentBoardSlot = flipCard.boardSlot.getAdjacentBoardSlot(battleScreen.gameBoard, i);
+                    if(adjacentBoardSlot != null && adjacentBoardSlot.card != null
+                    && adjacentBoardSlot.card.currentOwnerInBattle != attackingPlayer) {
+                        int attackPower = flipCard.boardSlot.card.getPowerRating(i, flipCard.boardSlot);
+                        int defensePower = adjacentBoardSlot.card.getPowerRating(Card.getOppositeDirectionIndex(i), adjacentBoardSlot);
+                        if(attackPower > defensePower) {
+                            newFlipList.add(adjacentBoardSlot.card);
+                        }
+                    }
+                }
+            }
+        }
+        targetCardList.clear();
+
+        if(newFlipList.size() > 0) {
+            comboFlipList.addAll(newFlipList);
+            currentState = "Flip Cards Stage 1";
+            currentStatePercent = 1.0f;
+        }
+    }
+
     public String update(BattleScreen battleScreen) {
         if(currentState.equals("Display Rule Stage 1")) {
             currentStatePercent += .055;
@@ -111,7 +167,14 @@ public class FlipChecks extends GamePhase {
                 currentState = "Flip Cards Stage 2";
                 
                 for(Card flippingCard : flipCardList) {
-                    flippingCard.currentOwnerInBattle = attackingPlayer;
+                    if(flippingCard.currentOwnerInBattle != attackingPlayer) {
+                        flippingCard.currentOwnerInBattle = attackingPlayer;
+                    }
+                }
+                for(Card flippingCard : comboFlipList) {
+                    if(flippingCard.currentOwnerInBattle != attackingPlayer) {
+                        flippingCard.currentOwnerInBattle = attackingPlayer;
+                    }
                 }
             }
         }
@@ -126,8 +189,31 @@ public class FlipChecks extends GamePhase {
                         flippingCard.originalOwnerInBattle = attackingPlayer;
                     }
                 }
+                for(Card flippingCard : comboFlipList) {
+                    if(flippingCard.originalOwnerInBattle != attackingPlayer) {
+                        flippingCard.originalOwnerInBattle = attackingPlayer;
+                    }
+                }
 
-                return "End GamePhase";
+                boolean comboCheck = false;
+                for(GameRule gameRule : battleScreen.gameRuleList) {
+                    if(gameRule.toString().equals("Combo")) {
+                        comboCheck = true;
+                        break;
+                    }
+                }
+
+                if((flipCardList.size() > 0
+                && activatedRuleList.size() > 0  // If Cards Were Flipped Using A GameRule (Same, Plus, Etc..)
+                && comboCheck)                   // AND If Combo GameRule Is Active
+                || comboFlipList.size() > 0) {
+                    initComboFlips(battleScreen);
+                    if(comboFlipList.size() == 0) {
+                        return "End GamePhase";
+                    }
+                } else {
+                    return "End GamePhase";
+                }
             }
         }
 

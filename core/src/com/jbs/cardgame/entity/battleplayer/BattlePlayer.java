@@ -72,6 +72,8 @@ public class BattlePlayer {
                     targetCard.currentLocation.y = ((Card.HEIGHT + (BoardSlot.PADDING * 2)) * targetSlot.y) + BoardSlot.PADDING;
                     targetCard.originalOwnerInBattle = this;
                     targetCard.currentOwnerInBattle = this;
+                    targetCard.gameRuleFlip = false;
+                    targetCard.boardSlot = targetBoardSlot;
                     targetBoardSlot.card = targetCard;
     
                     return true;

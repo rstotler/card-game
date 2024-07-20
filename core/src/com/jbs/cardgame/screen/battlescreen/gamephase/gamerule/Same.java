@@ -28,6 +28,12 @@ public class Same extends GameRule {
         if(sameCardList.size() > 1) {
             flipCheckGamePhase.activatedRuleList.add(toString());
             for(Card sameCard : sameCardList) {
+                if(sameCard.currentOwnerInBattle == flipCheckGamePhase.attackingPlayer) {
+                    sameCard.isCurrentOwner = true;
+                } else {
+                    sameCard.isCurrentOwner = false;
+                }
+                sameCard.gameRuleFlip = true;
                 flipCheckGamePhase.flipCardList.add(sameCard);
             }
         }

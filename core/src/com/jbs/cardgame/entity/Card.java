@@ -31,9 +31,12 @@ public class Card {
     public Point currentLocation;
     public Point targetLocation;
     public Point selectedCardOffset;
+    public BoardSlot boardSlot;
 
     public BattlePlayer originalOwnerInBattle;
     public BattlePlayer currentOwnerInBattle;
+    public boolean isCurrentOwner;
+    public boolean gameRuleFlip;
 
     public Card() {
         powerRating = new int[4];
@@ -45,9 +48,12 @@ public class Card {
         currentLocation = new Point(0, 0);
         targetLocation = new Point(0, 0);
         selectedCardOffset = new Point(0, 0);
+        boardSlot = null;
 
         originalOwnerInBattle = null;
         currentOwnerInBattle = null;
+        isCurrentOwner = false;
+        gameRuleFlip = false;
     }
 
     public Card(int[] powerRatingList) {

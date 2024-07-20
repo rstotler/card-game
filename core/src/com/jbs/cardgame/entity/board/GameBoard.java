@@ -24,16 +24,16 @@ public class GameBoard {
 
     public BitmapFont fontCard;
 
-    public GameBoard() {
-        cardsWidth = 5;
-        cardsHeight = 4;
+    public GameBoard(int cardsWidth, int cardsHeight, int nonPlayableCount, int elementSlotCount) {
+        this.cardsWidth = cardsWidth;
+        this.cardsHeight = cardsHeight;
 
         fontCard = new BitmapFont(Gdx.files.internal("fonts/Code_New_Roman_18.fnt"), Gdx.files.internal("fonts/Code_New_Roman_18.png"), false);
 
-        generateBoard();
+        generateBoard(nonPlayableCount, elementSlotCount);
     }
 
-    public void generateBoard() {
+    public void generateBoard(int nonPlayableCount, int elementSlotCount) {
         boardSlot = new BoardSlot[cardsWidth][cardsHeight];
         for(int y = 0; y < cardsHeight; y++) {
             for(int x = 0; x < cardsWidth; x++) {
@@ -41,10 +41,16 @@ public class GameBoard {
             }
         }
 
-        for(int i = 0; i < 2; i++) {
+        for(int i = 0; i < nonPlayableCount; i++) {
             int randomX = new Random().nextInt(cardsWidth);
             int randomY = new Random().nextInt(cardsHeight);
             boardSlot[randomX][randomY].isPlayable = false;
+        }
+
+        for(int i = 0; i < elementSlotCount; i++) {
+            int randomX = new Random().nextInt(cardsWidth);
+            int randomY = new Random().nextInt(cardsHeight);
+            boardSlot[randomX][randomY].element = Card.getElementList().get(new Random().nextInt(Card.getElementList().size()));
         }
     }
 
@@ -87,7 +93,8 @@ public class GameBoard {
                     
                     // Render Flipping Cards OR Cards On Board //
                     if(gamePhase != null && gamePhase.toString().equals("FlipChecks")
-                    && ((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)
+                    && (((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)
+                    || ((FlipChecks) gamePhase).comboFlipList.contains(targetBoardSlot.card))
                     && targetBoardSlot.card.originalOwnerInBattle != ((FlipChecks) gamePhase).attackingPlayer) {
                         ((FlipChecks) gamePhase).renderFlippingCard(spriteBatch, targetBoardSlot);
                     } else {

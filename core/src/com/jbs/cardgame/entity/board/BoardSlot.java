@@ -23,10 +23,6 @@ public class BoardSlot {
         card = null;
         element = "";
 
-        if(new Random().nextInt(4) == 0) {
-            element = Card.getElementList().get(new Random().nextInt(Card.getElementList().size()));
-        }
-
         color = new Random().nextInt(50) + 10;
     }
 
