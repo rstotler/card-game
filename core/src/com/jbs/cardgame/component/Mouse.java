@@ -3,6 +3,7 @@ package com.jbs.cardgame.component;
 import com.badlogic.gdx.Gdx;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
+import com.jbs.cardgame.entity.board.BoardSlot;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.Rect;
 
@@ -11,6 +12,7 @@ public class Mouse {
 
     public Rect rect;
 
+    public BoardSlot hoverBoardSlot;
     public boolean hoverHandCheck;
     public Card hoverHandCard;
     public Card selectedHandCard;
@@ -20,6 +22,7 @@ public class Mouse {
 
         rect = new Rect(new Point(0, 0), 1, 1);
 
+        hoverBoardSlot = null;
         hoverHandCheck = false;
         hoverHandCard = null;
         selectedHandCard = null;

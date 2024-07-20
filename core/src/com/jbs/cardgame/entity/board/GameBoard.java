@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.jbs.cardgame.Settings;
+import com.jbs.cardgame.component.Mouse;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.screen.ImageManager;
 import com.jbs.cardgame.screen.battlescreen.gamephase.*;
@@ -54,7 +55,7 @@ public class GameBoard {
         }
     }
 
-    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer, GamePhase gamePhase) {
+    public void render(OrthographicCamera camera, OrthographicCamera cameraTop, ImageManager imageManager, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer, GamePhase gamePhase, Mouse mouse) {
         for(int y = cardsHeight - 1; y >= 0; y--) {
             for(int x = 0; x < cardsWidth; x++) {
                 BoardSlot targetBoardSlot = boardSlot[x][y];
@@ -65,7 +66,11 @@ public class GameBoard {
                 if(targetBoardSlot.isPlayable) {
                     shapeRenderer.begin(ShapeType.Filled);
                     shapeRenderer.setProjectionMatrix(camera.combined);
-                    shapeRenderer.setColor(0/255f, targetBoardSlot.color/255f, 0/255f, 1f);
+                    if(mouse.hoverBoardSlot != null && mouse.hoverBoardSlot == targetBoardSlot) {
+                        shapeRenderer.setColor(0/255f, 10/255f, 0/255f, 1f);
+                    } else {
+                        shapeRenderer.setColor(0/255f, targetBoardSlot.color/255f, 0/255f, 1f);
+                    }
                     shapeRenderer.rect(xLoc, yLoc, Card.WIDTH + (BoardSlot.PADDING * 2), Card.HEIGHT + (BoardSlot.PADDING * 2));
                     shapeRenderer.end();
 

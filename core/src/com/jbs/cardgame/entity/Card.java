@@ -27,6 +27,7 @@ public class Card {
     
     public int[] powerRating; // 0 - Top, 1 - Right, 2 - Bottom, 3 - Left
     public String element;    // Fire, Ice, Lightning, Earth, Water, Poison, Dark, Holy
+    public int movement;
 
     public Point currentLocation;
     public Point targetLocation;
@@ -44,6 +45,7 @@ public class Card {
             powerRating[i] = new Random().nextInt(10) + 1;
         }
         element = Card.getElementList().get(new Random().nextInt(Card.getElementList().size()));
+        movement = new Random().nextInt(4);
 
         currentLocation = new Point(0, 0);
         targetLocation = new Point(0, 0);
@@ -121,6 +123,8 @@ public class Card {
             String elementSubstring = element.substring(0, 1) + element.substring(element.length() - 1);
             font.draw(spriteBatch, elementSubstring, 8, 112);
         }
+
+        font.draw(spriteBatch, String.valueOf(movement), 8, 19);
 
         spriteBatch.end();
         frameBufferCard.end();
