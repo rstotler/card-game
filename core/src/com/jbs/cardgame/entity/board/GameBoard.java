@@ -84,20 +84,39 @@ public class GameBoard {
                     }
                 }
 
-                // Render BoardSlot Card //
-                if(targetBoardSlot.card != null) {
+                // Render BoardSlot Card OR  //
+                BoardSlot mouseHoverBoardSlot = mouse.getHoverBoardSlot(camera, boardSlot);
+                boolean movingBoardSlotCard = (mouse.selectedBoardSlot != null && mouse.selectedBoardSlot.card != null
+                                              && mouseHoverBoardSlot != null && mouseHoverBoardSlot.isPlayable
+                                              && mouseHoverBoardSlot.location.x == x && mouseHoverBoardSlot.location.y == y
+                                              && !(mouseHoverBoardSlot.location.x == mouse.selectedBoardSlot.location.x && mouseHoverBoardSlot.location.y == mouse.selectedBoardSlot.location.y));
+
+                if(targetBoardSlot.card != null || movingBoardSlotCard) {
+
+                    // Set Card Color //
                     RGBColor cardColor = new RGBColor(0, 0, 0);
-                    if(targetBoardSlot.card.currentOwnerInBattle != null) {
+                    if(targetBoardSlot.card != null
+                    && targetBoardSlot.card.currentOwnerInBattle != null) {
                         cardColor = targetBoardSlot.card.currentOwnerInBattle.cardColor;
                     }
 
-                    targetBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch, cardColor, targetBoardSlot);
+                    // Buffer Image //
+                    if(targetBoardSlot.card != null) {
+                        targetBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch, cardColor, targetBoardSlot);
+                    } else {
+                        mouse.selectedBoardSlot.card.bufferCardImage(cameraTop, imageManager, spriteBatch, cardColor, mouse.selectedBoardSlot);
+                    }
                     
                     spriteBatch.setProjectionMatrix(camera.combined);
                     spriteBatch.begin();
                     
-                    // Render Flipping Cards OR Cards On Board //
-                    if(gamePhase != null && gamePhase.toString().equals("FlipChecks")
+                    // Render Moving Card OR Flipping Cards OR Cards On Board //
+                    if(movingBoardSlotCard) {
+                        Point selectedBoardCardLocation = targetBoardSlot.getScreenLocation();
+                        spriteBatch.setColor(1, 1, 1, .4f);
+                        spriteBatch.draw(Card.frameBufferCard.getColorBufferTexture(), selectedBoardCardLocation.x, selectedBoardCardLocation.y, Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT, 0, 0, 1, 1);
+                        spriteBatch.setColor(1, 1, 1, 1);
+                    } else if(gamePhase != null && gamePhase.toString().equals("FlipChecks")
                     && (((FlipChecks) gamePhase).flipCardList.contains(targetBoardSlot.card)
                     || ((FlipChecks) gamePhase).comboFlipList.contains(targetBoardSlot.card))
                     && targetBoardSlot.card.originalOwnerInBattle != ((FlipChecks) gamePhase).attackingPlayer) {

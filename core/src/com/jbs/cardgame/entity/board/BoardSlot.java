@@ -46,4 +46,10 @@ public class BoardSlot {
 
         return null;
     }
+
+    public Point getScreenLocation() {
+        int locationX = ((Card.WIDTH + (PADDING * 2)) * location.x) + PADDING;
+        int locationY = ((Card.HEIGHT + (PADDING * 2)) * location.y) + PADDING;
+        return new Point(locationX, locationY);
+    }
 }

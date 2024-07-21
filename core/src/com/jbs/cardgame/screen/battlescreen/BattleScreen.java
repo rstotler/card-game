@@ -31,7 +31,7 @@ public class BattleScreen extends Screen {
     public GameBoard gameBoard;
 
     public ArrayList<GameRule> gameRuleList;
-    public ArrayList<BattlePlayer> battlePlayerList;
+    public ArrayList<BattlePlayer> battlePlayerList; // Player Is Always Index 0
     public BattlePlayer currentTurnBattlePlayer;
 
     public BattleScreen() {
@@ -196,7 +196,8 @@ public class BattleScreen extends Screen {
             @Override
             public boolean touchDragged(int moveX, int moveY, int pointer) {
                 if(mouse.leftClick) {
-                    if(mouse.selectedHandCard == null) {
+                    if(mouse.selectedHandCard == null
+                    && mouse.selectedBoardSlot == null) {
                         moveY = Gdx.graphics.getHeight() - moveY;
                         int moveDiffX = (int) (mouse.rect.location.x - (moveX * Settings.SIZE_RATIO_X)) / 2;
                         int moveDiffY = (int) (mouse.rect.location.y - (moveY * Settings.SIZE_RATIO_Y)) / 2;
@@ -211,6 +212,7 @@ public class BattleScreen extends Screen {
     public void leftClickDown() {
         mouse.leftClick = true;
 
+        // Click Hand Card //
         if(mouse.hoverHandCard != null) {
             mouse.selectedHandCard = mouse.hoverHandCard;
             mouse.hoverHandCard = null;
@@ -219,47 +221,88 @@ public class BattleScreen extends Screen {
             mouse.selectedHandCard.selectedCardOffset.x = mouse.selectedHandCard.currentLocation.x - mouse.rect.location.x;
             mouse.selectedHandCard.selectedCardOffset.y = mouse.selectedHandCard.currentLocation.y - mouse.rect.location.y + (BattlePlayer.HAND_Y_OFFSET * -1);
         }
+
+        // Click BoardSlot //
+        else if(gamePhase != null
+        && gamePhase.toString().equals("PlayCard")
+        && battlePlayerList.get(0) == currentTurnBattlePlayer
+        && mouse.hoverBoardSlot != null
+        && mouse.hoverBoardSlot.card != null
+        && mouse.hoverBoardSlot.card.currentOwnerInBattle == battlePlayerList.get(0)) {
+            mouse.selectedBoardSlot = mouse.hoverBoardSlot;
+        }
+
+        else {
+            mouse.defaultClickLevel = true;
+        }
     }
 
     public void leftClickUp() {
         mouse.leftClick = false;
+        mouse.defaultClickLevel = false;
 
         // Place Selected Card Into BoardSlot OR Return Card To Hand //
         if(mouse.selectedHandCard != null) {
-            int clickX = (int) (mouse.rect.location.x - 640 + ((camera.position.x * 2) / camera.zoom));
-            int clickY = (int) (mouse.rect.location.y - 384 + ((camera.position.y * 2) / camera.zoom));
+            Point mouseClickLocation = mouse.getScreenLocation(camera);
+            int slotX = (int) (mouseClickLocation.x / (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
+            int slotY = (int) (mouseClickLocation.y / (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
             
-            if(clickX >= 0 && clickY >= 0) {
-                int slotX = (int) (clickX / (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
-                int slotY = (int) (clickY / (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom));
-                Point targetSlot = new Point(slotX, slotY);
-                
-                // Place Card On Board //
-                if(!mouse.hoverHandCheck
-                && battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, mouse.selectedHandCard, targetSlot, currentTurnBattlePlayer, false)) {
-                    battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
-                    battlePlayerList.get(0).updateHandLocations();
+            // Place Card On Board //
+            if(mouse.hoverHandCheck == false
+            && mouseClickLocation.x >= 0 && mouseClickLocation.y >= 0
+            && battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, mouse.selectedHandCard, new Point(slotX, slotY), currentTurnBattlePlayer, false)) {
+                battlePlayerList.get(0).removeCardFromHand(mouse.selectedHandCard);
+                battlePlayerList.get(0).updateHandLocations();
 
-                    gamePhase = new FlipChecks(battlePlayerList.get(0));
-                    FlipChecks.initFlipSurroundingCards(this, gameBoard.boardSlot[slotX][slotY]);
-                }
+                gamePhase = new FlipChecks(battlePlayerList.get(0));
+                FlipChecks.initFlipSurroundingCards(this, gameBoard.boardSlot[slotX][slotY]);
+            }
+            
+            // Return Card To Hand //
+            else {
+                float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
+                float diffY = (mouse.selectedHandCard.targetLocation.y - BattlePlayer.HAND_Y_OFFSET) - (mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y);
                 
-                // Return Card To Hand //
-                else {
-                    float diffX = mouse.selectedHandCard.targetLocation.x - (mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x);
-                    float diffY = (mouse.selectedHandCard.targetLocation.y - BattlePlayer.HAND_Y_OFFSET) - (mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y);
-                    
-                    if(Math.abs(diffX) < Card.MOVE_SPEED && Math.abs(diffY) < Card.MOVE_SPEED) {
-                        mouse.selectedHandCard.currentLocation.x = mouse.selectedHandCard.targetLocation.x;
-                        mouse.selectedHandCard.currentLocation.y = mouse.selectedHandCard.targetLocation.y;
-                    } else {
-                        mouse.selectedHandCard.currentLocation.x = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
-                        mouse.selectedHandCard.currentLocation.y = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
-                    }
+                if(Math.abs(diffX) < Card.MOVE_SPEED && Math.abs(diffY) < Card.MOVE_SPEED) {
+                    mouse.selectedHandCard.currentLocation.x = mouse.selectedHandCard.targetLocation.x;
+                    mouse.selectedHandCard.currentLocation.y = mouse.selectedHandCard.targetLocation.y;
+                } else {
+                    mouse.selectedHandCard.currentLocation.x = mouse.rect.location.x + mouse.selectedHandCard.selectedCardOffset.x;
+                    mouse.selectedHandCard.currentLocation.y = mouse.rect.location.y + mouse.selectedHandCard.selectedCardOffset.y;
                 }
             }
             
             mouse.selectedHandCard = null;
+        }
+
+        // Place Selected BoardSlot Card Into New BoardSlot //
+        else if(mouse.selectedBoardSlot != null
+        && mouse.selectedBoardSlot.card != null) {
+            Point mouseClickLocation = mouse.getScreenLocation(camera);
+            if(mouseClickLocation.x >= 0 && mouseClickLocation.y >= 0) {
+                BoardSlot targetBoardSlot = mouse.getHoverBoardSlot(camera, gameBoard.boardSlot);
+                if(targetBoardSlot != null
+                && targetBoardSlot.card == null
+                && targetBoardSlot.isPlayable) {
+                    int diffX = Math.abs(mouse.selectedBoardSlot.location.x - targetBoardSlot.location.x);
+                    int diffY = Math.abs(mouse.selectedBoardSlot.location.y - targetBoardSlot.location.y);
+                    if(diffX + diffY > 0
+                    && diffX + diffY <= mouse.selectedBoardSlot.card.movement) {
+                        Card selectedBoardSlotCard = mouse.selectedBoardSlot.card;
+                        mouse.selectedBoardSlot.card = null;
+
+                        if(mouse.hoverHandCheck == false
+                        && battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, selectedBoardSlotCard, targetBoardSlot.location, currentTurnBattlePlayer, false)) {
+                            gamePhase = new FlipChecks(battlePlayerList.get(0));
+                            FlipChecks.initFlipSurroundingCards(this, targetBoardSlot);
+                        } else {
+                            mouse.selectedBoardSlot.card = selectedBoardSlotCard;
+                        }
+                    }
+                }
+            }
+
+            mouse.selectedBoardSlot = null;
         }
     }
 
@@ -307,7 +350,9 @@ public class BattleScreen extends Screen {
             if(mouse.rect.rectCollide(handCardRect)
             && handCard.currentLocation.equals(handCard.targetLocation)) {
                 mouse.hoverHandCheck = true;
-                if(mouse.selectedHandCard == null) {
+                if(mouse.selectedHandCard == null
+                && mouse.selectedBoardSlot == null
+                && mouse.defaultClickLevel == false) {
                     mouse.hoverHandCard = handCard;
                     break;
                 }
@@ -316,13 +361,12 @@ public class BattleScreen extends Screen {
 
         // Set HoverBoardCell //
         mouse.hoverBoardSlot = null;
+        Point mouseScreenLoc = mouse.getScreenLocation(camera);
         if(mouse.hoverHandCard == null) {
-            int mouseX = (int) (mouse.rect.location.x - 640 + ((camera.position.x * 2) / camera.zoom));
-            int mouseY = (int) (mouse.rect.location.y - 384 + ((camera.position.y * 2) / camera.zoom));
-            if(mouseX >= 0 && mouseX < ((((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom) * gameBoard.boardSlot.length)) {
-                if(mouseY >= 0 && mouseY < ((((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom) * gameBoard.boardSlot[0].length)) {
-                    int slotX = mouseX / (int) (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom);
-                    int slotY = mouseY / (int) (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom);
+            if(mouseScreenLoc.x >= 0 && mouseScreenLoc.x < ((((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom) * gameBoard.boardSlot.length)) {
+                if(mouseScreenLoc.y >= 0 && mouseScreenLoc.y < ((((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom) * gameBoard.boardSlot[0].length)) {
+                    int slotX = mouseScreenLoc.x / (int) (((Card.WIDTH + (BoardSlot.PADDING * 2)) * 2) / camera.zoom);
+                    int slotY = mouseScreenLoc.y / (int) (((Card.HEIGHT + (BoardSlot.PADDING * 2)) * 2) / camera.zoom);
                     if(slotX >= 0 && slotX < gameBoard.boardSlot.length
                     && slotY >= 0 && slotY < gameBoard.boardSlot[0].length) {
                         mouse.hoverBoardSlot = gameBoard.boardSlot[slotX][slotY];
