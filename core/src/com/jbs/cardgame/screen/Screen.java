@@ -45,7 +45,7 @@ public class Screen {
     }
 
     public void handleInput() {}
-    public void update() {}
+    public String update() {return "";}
     public void render() {}
     public void dispose() {}
 }

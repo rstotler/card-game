@@ -124,7 +124,7 @@ public class Card {
             font.draw(spriteBatch, elementSubstring, 8, 112);
         }
 
-        font.draw(spriteBatch, String.valueOf(movement), 8, 19);
+        font.draw(spriteBatch, String.valueOf(movement), 8, 20);
 
         spriteBatch.end();
         frameBufferCard.end();

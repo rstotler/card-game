@@ -34,6 +34,8 @@ public class BattleScreen extends Screen {
     public ArrayList<BattlePlayer> battlePlayerList; // Player Is Always Index 0
     public BattlePlayer currentTurnBattlePlayer;
 
+    public boolean endBattleScreenCheck;
+
     public BattleScreen() {
         super();
 
@@ -43,6 +45,7 @@ public class BattleScreen extends Screen {
         cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
         imageManager = new ImageManager();
+        endBattleScreenCheck = false;
         initInputAdapter();
 
         initBattle();
@@ -62,7 +65,7 @@ public class BattleScreen extends Screen {
         currentTurnBattlePlayer = battlePlayerList.get(0);
 
         gamePhase = new Deal();
-        gameBoard = new GameBoard(7, 5, 3, 7);
+        gameBoard = new GameBoard(4, 4, 2, 3);
 
         loadDebugBattle();
     }
@@ -114,6 +117,18 @@ public class BattleScreen extends Screen {
         // randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard8, new Point(2, 1), null, true);
         // Card sameCard9 = new Card(new int[] {8, 8, 8, 8});
         // randomPlayer.placeCardOnGameBoard(gamePhase, gameBoard, sameCard9, new Point(2, 3), null, true);
+    
+        for(int y = 0; y < gameBoard.boardSlot[0].length; y++) {
+            for(int x = 0; x < gameBoard.boardSlot.length; x++) {
+                if(gameBoard.boardSlot[x][y].isPlayable) {
+                    battlePlayerList.get(0).placeCardOnGameBoard(gamePhase, gameBoard, new Card(), new Point(x, y), null, true);
+                }
+            }
+        }
+        int lastSlotX = gameBoard.boardSlot.length - 1;
+        int lastSlotY = gameBoard.boardSlot[0].length - 1;
+        gameBoard.boardSlot[lastSlotX][lastSlotY].isPlayable = true;
+        gameBoard.boardSlot[lastSlotX][lastSlotY].card = null;
     }
 
     public void initInputAdapter() {
@@ -212,8 +227,14 @@ public class BattleScreen extends Screen {
     public void leftClickDown() {
         mouse.leftClick = true;
 
+        // End Battle Screen //
+        if(gamePhase != null
+        && gamePhase.toString().equals("EndBattle")) {
+            endBattleScreenCheck = true;
+        }
+
         // Click Hand Card //
-        if(mouse.hoverHandCard != null) {
+        else if(mouse.hoverHandCard != null) {
             mouse.selectedHandCard = mouse.hoverHandCard;
             mouse.hoverHandCard = null;
 
@@ -320,7 +341,7 @@ public class BattleScreen extends Screen {
     public void handleInput() {
     }
 
-    public void update() {
+    public String update() {
         mouse.updateLocation();
         updateMouse();
         updateHand();
@@ -332,8 +353,18 @@ public class BattleScreen extends Screen {
                 setNextPlayer();
             } else if(gamePhaseReturnStatus.equals("End GamePhase")) {
                 setNextPlayer();
-                gamePhase = gamePhase.nextGamePhase;
+                if(gameBoard.isFull()) {
+                    gamePhase = new EndBattle();
+                } else {
+                    gamePhase = gamePhase.nextGamePhase;
+                }
             }
+        }
+
+        if(endBattleScreenCheck) {
+            return "End Battle Screen";
+        } else {
+            return "";
         }
     }
 

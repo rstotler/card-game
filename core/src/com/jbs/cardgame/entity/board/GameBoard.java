@@ -2,9 +2,7 @@ package com.jbs.cardgame.entity.board;
 
 import java.util.Random;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -23,13 +21,9 @@ public class GameBoard {
 
     public BoardSlot[][] boardSlot;
 
-    public BitmapFont fontCard;
-
     public GameBoard(int cardsWidth, int cardsHeight, int nonPlayableCount, int elementSlotCount) {
         this.cardsWidth = cardsWidth;
         this.cardsHeight = cardsHeight;
-
-        fontCard = new BitmapFont(Gdx.files.internal("fonts/Code_New_Roman_18.fnt"), Gdx.files.internal("fonts/Code_New_Roman_18.png"), false);
 
         generateBoard(nonPlayableCount, elementSlotCount);
     }
@@ -79,7 +73,7 @@ public class GameBoard {
                         spriteBatch.setProjectionMatrix(camera.combined);
                         spriteBatch.begin();
                         String elementSubstring = targetBoardSlot.element.substring(0, 1) + targetBoardSlot.element.substring(targetBoardSlot.element.length() - 1);
-                        fontCard.draw(spriteBatch, elementSubstring, xLoc + 37, yLoc + 73);
+                        Card.font.draw(spriteBatch, elementSubstring, xLoc + 37, yLoc + 73);
                         spriteBatch.end();
                     }
                 }
@@ -129,6 +123,19 @@ public class GameBoard {
                 }
             }
         }
+    }
+
+    public boolean isFull() {
+        for(int y = 0; y < boardSlot[0].length; y++) {
+            for(int x = 0; x < boardSlot.length; x++) {
+                if(boardSlot[x][y].isPlayable
+                && boardSlot[x][y].card == null) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public Rect getSize() {
