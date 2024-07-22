@@ -9,6 +9,7 @@ import com.jbs.cardgame.component.Mouse;
 
 public class Screen {
     public OrthographicCamera camera;
+    public OrthographicCamera cameraDebug;
     public Mouse mouse;
 
     public SpriteBatch spriteBatch;
@@ -19,6 +20,8 @@ public class Screen {
     public Screen() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+        cameraDebug = new OrthographicCamera();
+        cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         mouse = new Mouse();
         
         spriteBatch = new SpriteBatch();

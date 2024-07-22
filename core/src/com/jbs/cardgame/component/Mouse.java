@@ -43,8 +43,8 @@ public class Mouse {
     }
 
     public Point getScreenLocation(OrthographicCamera camera) {
-        int mouseX = (int) (rect.location.x - 640 + ((camera.position.x * 2) / camera.zoom));
-        int mouseY = (int) (rect.location.y - 384 + ((camera.position.y * 2) / camera.zoom));
+        int mouseX = (int) (rect.location.x - (Settings.SCREEN_WIDTH / 2) + ((camera.position.x * 2) / camera.zoom));
+        int mouseY = (int) (rect.location.y - (Settings.SCREEN_HEIGHT / 2) + ((camera.position.y * 2) / camera.zoom));
         return new Point(mouseX, mouseY);
     }
 

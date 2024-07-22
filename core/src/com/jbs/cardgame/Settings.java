@@ -2,8 +2,8 @@ package com.jbs.cardgame;
 
 public class Settings {
     public static String TITLE = "Card Game";
-    public static int SCREEN_WIDTH = 1280;
-    public static int SCREEN_HEIGHT = 768;
+    public static int SCREEN_WIDTH = 1842;
+    public static int SCREEN_HEIGHT = 1036;
     public static int FPS = 60;
     public static boolean ENABLE_VSYNC = true;
 

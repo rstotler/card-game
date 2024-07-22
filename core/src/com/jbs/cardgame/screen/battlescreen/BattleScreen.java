@@ -23,7 +23,6 @@ import com.jbs.cardgame.screen.utility.Rect;
 
 public class BattleScreen extends Screen {
     public OrthographicCamera cameraTop;
-    public OrthographicCamera cameraDebug;
     
     public ImageManager imageManager;
     
@@ -41,8 +40,6 @@ public class BattleScreen extends Screen {
 
         cameraTop = new OrthographicCamera();
         cameraTop.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cameraDebug = new OrthographicCamera();
-        cameraDebug.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
         imageManager = new ImageManager();
         endBattleScreenCheck = false;
@@ -145,13 +142,13 @@ public class BattleScreen extends Screen {
                     Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
 
                     if(isFullScreen) {
-                        Gdx.graphics.setWindowedMode(1280, 768);
+                        Gdx.graphics.setWindowedMode(Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT);
                     } else {
                         Gdx.graphics.setFullscreenMode(currentMode);
                     }
 
-                    Settings.SIZE_RATIO_X = 1280.0f / Gdx.graphics.getWidth();
-                    Settings.SIZE_RATIO_Y = 768.0f / Gdx.graphics.getHeight();
+                    Settings.SIZE_RATIO_X = (Settings.SCREEN_WIDTH + 0.0f) / Gdx.graphics.getWidth();
+                    Settings.SIZE_RATIO_Y = (Settings.SCREEN_HEIGHT + 0.0f) / Gdx.graphics.getHeight();
 
                     battlePlayerList.get(0).updateHandLocations();
                 }
@@ -473,17 +470,22 @@ public class BattleScreen extends Screen {
         spriteBatch.setProjectionMatrix(cameraDebug.combined);
         spriteBatch.begin();
 
+        int debugDataYLoc = Settings.SCREEN_HEIGHT - 4;
+
         font.setColor(Color.WHITE);
-        font.draw(spriteBatch, "FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()), 1205, 767);
+        font.draw(spriteBatch, "FPS: " + String.valueOf(Gdx.graphics.getFramesPerSecond()), Settings.SCREEN_WIDTH - 75, debugDataYLoc);
         
-        font.draw(spriteBatch, "Mouse X: " + mouse.rect.location.x + ", Y: " + mouse.rect.location.y + ", Zoom: " + camera.zoom, 3, 765);
+        font.draw(spriteBatch, "Mouse X: " + mouse.rect.location.x + ", Y: " + mouse.rect.location.y + ", Zoom: " + camera.zoom + ", Ratio: " + Settings.SIZE_RATIO_X + " " + Settings.SIZE_RATIO_Y, 3, debugDataYLoc);
+        debugDataYLoc -= 15;
         
         String gamePhaseString = "None";
         if(gamePhase != null) {
             gamePhaseString = gamePhase.toString();
         }
-        font.draw(spriteBatch, "GamePhase: " + gamePhaseString, 3, 750);
-        font.draw(spriteBatch, "Current Player: " + battlePlayerList.indexOf(currentTurnBattlePlayer), 3, 735);
+        font.draw(spriteBatch, "GamePhase: " + gamePhaseString, 3, debugDataYLoc);
+        debugDataYLoc -= 15;
+
+        font.draw(spriteBatch, "Current Player: " + battlePlayerList.indexOf(currentTurnBattlePlayer), 3, debugDataYLoc);
         
         spriteBatch.end();
     }

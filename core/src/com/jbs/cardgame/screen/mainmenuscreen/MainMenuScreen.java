@@ -1,25 +1,22 @@
-package com.jbs.cardgame.screen.gamescreen;
+package com.jbs.cardgame.screen.mainmenuscreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.screen.Screen;
 
-/*
- * Move Locations
- * Card Shop (Buy/Sell/Trade/Play/Events)
- * Tournament
- * Deck Builder
- * Card Catalogue/Player Stats
- */
+public class MainMenuScreen extends Screen {
+    public Texture background;
 
-public class GameScreen extends Screen {
-    public GameScreen() {
+    public MainMenuScreen() {
         super();
+
+        background = new Texture("images/MainMenuBackground.png");
 
         initInputAdapter();
     }
@@ -101,7 +98,13 @@ public class GameScreen extends Screen {
     }
 
     public void render() {
-        ScreenUtils.clear(2/255f, 2/255f, 2/255f, 1);
+        ScreenUtils.clear(0/255f, 0/255f, 0/255f, 1);
+
+        spriteBatch.begin();
+
+        spriteBatch.draw(background, 0, 0);
+
+        spriteBatch.end();
 
         renderDebugData();
     }
@@ -122,6 +125,8 @@ public class GameScreen extends Screen {
     }
 
     public void dispose() {
+        background.dispose();
+
         spriteBatch.dispose();
         shapeRenderer.dispose();
         font.dispose();
