@@ -5,18 +5,31 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.screen.Screen;
 
 public class MainMenuScreen extends Screen {
-    public Texture background;
+    public SpriteBatch spriteBatchMask;
+    public FrameBuffer frameBufferBackgroundMask;
+
+    public Texture textureBackground;
+    public Texture textureBackgroundMask;
+    public Texture textureBackgroundMaskImage;
 
     public MainMenuScreen() {
         super();
 
-        background = new Texture("images/MainMenuBackground.png");
+        spriteBatchMask = new SpriteBatch();
+        frameBufferBackgroundMask = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+
+        textureBackground = new Texture("images/mainmenu/Background.png");
+        textureBackgroundMask = new Texture("images/mainmenu/BackgroundMask.png");
+        textureBackgroundMaskImage = new Texture("images/mainmenu/BackgroundMaskImage.png");
 
         initInputAdapter();
     }
@@ -98,12 +111,26 @@ public class MainMenuScreen extends Screen {
     }
 
     public void render() {
-        ScreenUtils.clear(0/255f, 0/255f, 0/255f, 1);
 
+        // Background Image //
         spriteBatch.begin();
+        spriteBatch.draw(textureBackground, 0, 0);
+        spriteBatch.end();
 
-        spriteBatch.draw(background, 0, 0);
+        // Mask//
+        frameBufferBackgroundMask.begin();
+        spriteBatchMask.begin();
 
+        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        spriteBatchMask.draw(textureBackgroundMask, -150, -150);
+        spriteBatchMask.setBlendFunction(GL20.GL_ONE_MINUS_DST_ALPHA, GL20.GL_ONE_MINUS_DST_COLOR);
+        spriteBatchMask.draw(textureBackgroundMaskImage, 0, 0);
+
+        spriteBatchMask.end();
+        frameBufferBackgroundMask.end();
+        spriteBatch.begin();
+        spriteBatch.draw(frameBufferBackgroundMask.getColorBufferTexture(), 0, 0, frameBufferBackgroundMask.getWidth(), frameBufferBackgroundMask.getHeight(), 0, 0, 1, 1);
         spriteBatch.end();
 
         renderDebugData();
@@ -125,7 +152,11 @@ public class MainMenuScreen extends Screen {
     }
 
     public void dispose() {
-        background.dispose();
+        spriteBatchMask.dispose();
+        frameBufferBackgroundMask.dispose();
+        textureBackground.dispose();
+        textureBackgroundMask.dispose();
+        textureBackgroundMaskImage.dispose();
 
         spriteBatch.dispose();
         shapeRenderer.dispose();
