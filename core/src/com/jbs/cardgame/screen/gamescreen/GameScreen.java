@@ -101,7 +101,7 @@ public class GameScreen extends Screen {
     }
 
     public void render() {
-        ScreenUtils.clear(2/255f, 2/255f, 2/255f, 1);
+        ScreenUtils.clear(0/255f, 0/255f, 0/255f, 1);
 
         renderDebugData();
     }

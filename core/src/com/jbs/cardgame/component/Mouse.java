@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.jbs.cardgame.Settings;
 import com.jbs.cardgame.entity.Card;
 import com.jbs.cardgame.entity.board.BoardSlot;
+import com.jbs.cardgame.screen.utility.Button;
 import com.jbs.cardgame.screen.utility.Point;
 import com.jbs.cardgame.screen.utility.Rect;
 
@@ -12,6 +13,8 @@ public class Mouse {
     public boolean leftClick;
 
     public Rect rect;
+
+    public Button hoverButton;
 
     public BoardSlot selectedBoardSlot;
     public BoardSlot hoverBoardSlot;
@@ -26,6 +29,8 @@ public class Mouse {
         leftClick = false;
 
         rect = new Rect(new Point(0, 0), 1, 1);
+
+        hoverButton = null;
 
         selectedBoardSlot = null;
         hoverBoardSlot = null;

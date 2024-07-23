@@ -20,7 +20,12 @@ public class CardGame extends ApplicationAdapter {
 		screen.handleInput();
 		
 		String updateString = screen.update();
-		if(updateString.equals("End Battle Screen")) {
+		if(updateString.equals("Click New Game")) {
+			screen.dispose();
+			screen = new GameScreen();
+		}
+
+		else if(updateString.equals("End Battle Screen")) {
 			screen.dispose();
 			screen = new GameScreen();
 		}

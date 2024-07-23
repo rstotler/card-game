@@ -8,7 +8,7 @@ import com.jbs.cardgame.entity.board.GameBoard;
 import com.jbs.cardgame.screen.battlescreen.gamephase.FlipChecks;
 
 public class GameRule {
-    public static BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/Code_New_Roman_72.fnt"), Gdx.files.internal("fonts/Code_New_Roman_72.png"), false);
+    public static BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/Code_New_Roman_72_BI.fnt"), Gdx.files.internal("fonts/Code_New_Roman_72_BI.png"), false);
     public static GlyphLayout fontLayout = new GlyphLayout();
 
     public String toString() {
